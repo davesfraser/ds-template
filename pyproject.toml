@@ -1,0 +1,212 @@
+[build-system]
+# How the project gets built into an installable package
+# hatchling is a modern, lightweight build backend that is a good default option
+# expects that uv will be utilised for environment management
+
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+# Package name, ds-template is a placeholder
+name = "ds-template"
+
+# Keep versioning simple (static) in the template for now
+# You can switch to hatch-vcs later if you want tag-based releases
+version = "0.1.0"
+
+description = "A modern data science project template."
+readme = "README.md"
+
+# Main Python version target for the project, trying to go with 3.14 upwards
+# Ruff and ty can infer the project Python version from here
+requires-python = ">=3.14"
+
+license = { file = "LICENSE" }
+
+# Keep base runtime light
+# Only include packages most projects will actually need
+dependencies = [
+    "pydantic",
+    "pydantic-settings",
+]
+
+[dependency-groups]
+# Dev-only tools: linting, typing, tests, coverage, hooks
+# uv treats the "dev" group specially and syncs it by default
+dev = [
+    "ruff",
+    "ty",
+    "pytest",
+    "pytest-cov",
+    "hypothesis",
+    "pre-commit",
+    "pandas-stubs",
+]
+
+# marimo is the notebook/app workflow for this template,
+# ...let's ditch Jupyter notebooks, never to be seen again
+notebook = [
+    "marimo[recommended]",
+]
+
+# Core dataframe/array stack
+# This gives you pandas + polars + Arrow interoperability without forcing ML deps
+data = [
+    "numpy",
+    "pandas",
+    "polars",
+    "pyarrow",
+]
+
+# Runtime dataframe validation
+# pandera supports multiple dataframe libraries, including pandas and polars
+validation = [
+    "pandera[polars]",
+]
+
+# Static plotting / publication-style figures / EDA
+viz-static = [
+    "matplotlib",
+    "seaborn",
+]
+
+# Interactive plots for exploration, demos, and marimo apps
+viz-interactive = [
+    "plotly",
+]
+
+# Small, portable default ML group
+# scikit-learn is still the best baseline starter for many DS projects
+ml = [
+    "scikit-learn",
+]
+
+[tool.uv]
+# Make default group behavior obvious
+# plain "uv sync" installs the base project + dev tools
+# Other groups stay opt-in so the starter doesn't become bloated by default
+# i.e. you'll need to explicitly tell uv to install them...
+default-groups = ["dev"]
+
+[tool.hatch.build.targets.wheel]
+# Build the installable package from src/ using a proper src layout
+# This avoids "works on my machine because repo root is importable" problems
+packages = ["src/ds_template"]
+
+[tool.pytest.ini_options]
+# Require a modern pytest
+minversion = "8.0"
+
+# Keep tests at the repo root instead of mixing them into src/
+testpaths = ["tests"]
+
+# Good defaults for CI and local runs:
+# -ra: show extra summary info
+# --strict-config: fail on bad pytest config
+# --strict-markers: fail on unknown markers instead of silently accepting typos
+# --cov: measure coverage for the package, not random files
+# --cov-report=term-missing:skip-covered: useful signal without too much noise
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--cov=ds_template",
+    "--cov-report=term-missing:skip-covered",
+]
+
+# If an expected-fail test suddenly passes, show it
+xfail_strict = true
+
+[tool.coverage.run]
+# Branch coverage is more useful than line-only coverage
+branch = true
+
+# Only measure your package, not tests or tooling code.
+source = ["ds_template"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+# Common exclusions that usually aren't worth counting
+# coverage.py documents exclude_also for adding custom exclusions like these
+exclude_also = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "raise AssertionError",
+]
+
+[tool.ruff]
+# 100 is a practical line length for DS code, chain-heavy code, and docstrings
+line-length = 100
+
+# Tell Ruff that src/ is the package root for import classification
+src = ["src"]
+
+# Ignore non-code artifact areas common in DS repos
+# This keeps Ruff focused on real source files
+extend-exclude = [
+    "data",
+    "models",
+    "reports",
+]
+
+[tool.ruff.lint]
+# Keep preview off in a template unless you intentionally want unstable rules/fixes
+preview = false
+
+# Explicit rule selection is easier to control than ALL
+# This set provides a strong default without making life a total misery
+select = [
+    "E4",   # pycodestyle import / syntax-related errors
+    "E7",
+    "E9",
+    "F",    # pyflakes correctness checks
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "SIM",  # simplifications
+    "C4",   # comprehensions
+    "PIE",  # small correctness / cleanup wins
+    "RUF",  # Ruff-native rules
+    "ANN",  # missing type annotations
+    "NPY",  # NumPy-specific checks
+    "PD",   # pandas-vet rules
+]
+
+ignore = [
+    "ANN401", # don't force removal of Any everywhere
+    "PD008",  # allow .at
+    "PD009",  # allow .iat
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can be less strict about annotations
+"tests/**/*.py" = ["ANN"]
+
+# marimo files are exploratory / notebook-like.
+# Keep them clean, but don't force full production-style typing there
+"marimo/**/*.py" = ["ANN", "F401", "F841"]
+
+# Re-exports in __init__.py are normal
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.flake8-annotations]
+# Actually enforce annotation coverage
+ignore-fully-untyped = false
+
+[tool.ruff.format]
+# Stay on stable formatter behavior
+preview = false
+
+# Also format Python code in docstrings
+docstring-code-format = true
+
+[tool.ty.src]
+# Type-check package code and tests
+include = ["src", "tests"]
+
+[tool.ty.terminal]
+# Cleaner terminal output
+output-format = "concise"
