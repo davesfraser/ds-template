@@ -94,7 +94,7 @@ ml = [
 # plain "uv sync" installs the base project + dev tools
 # Other groups stay opt-in so the starter doesn't become bloated by default
 # i.e. you'll need to explicitly tell uv to install them...
-default-groups = ["dev"]
+default-groups = ["dev", "notebook"]
 
 [tool.hatch.build.targets.wheel]
 # Build the installable package from src/ using a proper src layout
