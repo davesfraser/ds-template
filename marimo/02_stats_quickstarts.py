@@ -18,6 +18,8 @@ def _():
 
 @app.cell
 def _(np, pd):
+    # Produce some dummy data
+
     n = 80
     rng = np.random.default_rng(42)
 
