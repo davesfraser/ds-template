@@ -59,6 +59,7 @@ Current optional groups in this template are:
 
 - `notebook`
 - `data`
+- `stats`
 - `validation`
 - `vis-static`
 - `vis-interactive`
