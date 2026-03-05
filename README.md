@@ -22,7 +22,7 @@ I wanted to create a starting point for data science projects that is relevant f
 - a real `src/` package layout
 - clean tooling from the start
 - reproducible environments via a lockfile
-- notebook-style exploration without hidden state all over the place (Jupyter begone!)
+- notebook-style exploration in `marimo/` without hidden state all over the place (Jupyter begone!)
 - a setup that works well with git and VS Code
 - lightweight packaging so the project behaves like a real Python package, not just a folder on your machine
 
