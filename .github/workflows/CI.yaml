@@ -87,7 +87,7 @@ jobs:
 
       # Run lint rules to catch bugs and enforce conventions
       - name: Lint (ruff)
-        run: uv run ruff check .
+        run: uv run ruff check src tests
 
       # Run type checking to catch type errors before runtime
       - name: Type check (ty)
