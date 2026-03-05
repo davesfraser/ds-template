@@ -7,8 +7,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-# Package name, ds-template is a placeholder
-name = "ds-template"
+# Package name, currently a placeholder
+name = "your-project-name"
 
 # Keep versioning simple (static) in the template for now
 # You can switch to hatch-vcs later if you want tag-based releases
@@ -91,7 +91,7 @@ default-groups = ["dev"]
 [tool.hatch.build.targets.wheel]
 # Build the installable package from src/ using a proper src layout
 # This avoids "works on my machine because repo root is importable" problems
-packages = ["src/ds_template"]
+packages = ["src/your_package_name"]
 
 [tool.pytest.ini_options]
 # Require a modern pytest
@@ -110,7 +110,7 @@ addopts = [
     "-ra",
     "--strict-config",
     "--strict-markers",
-    "--cov=ds_template",
+    "--cov=your_package_name",
     "--cov-report=term-missing:skip-covered",
 ]
 
@@ -122,7 +122,7 @@ xfail_strict = true
 branch = true
 
 # Only measure your package, not tests or tooling code.
-source = ["ds_template"]
+source = ["your_package_name"]
 
 [tool.coverage.report]
 show_missing = true

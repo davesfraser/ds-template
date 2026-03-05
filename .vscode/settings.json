@@ -1,0 +1,31 @@
+{
+  // Keep Pylance as the main language server
+  // ty will still provide type-checking diagnostics
+  "python.languageServer": "Pylance",
+  "ty.disableLanguageServices": true,
+
+  // Use the repo's virtual environment (commented out, problematic in Windows)
+  //"python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+
+  // Use Ruff for formatting Python files
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // Also format JSON, YAML, and Markdown on save if you like
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // Make tests easier to run from inside VS Code
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+
+  // Keep terminal activation predictable on Windows
+  "python.terminal.activateEnvironment": true
+}
