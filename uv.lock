@@ -1893,10 +1893,10 @@ notebook = [
 validation = [
     { name = "pandera", extra = ["polars"] },
 ]
-viz-interactive = [
+vis-interactive = [
     { name = "plotly" },
 ]
-viz-static = [
+vis-static = [
     { name = "matplotlib" },
     { name = "seaborn" },
 ]
@@ -1926,8 +1926,8 @@ dev = [
 ml = [{ name = "scikit-learn" }]
 notebook = [{ name = "marimo", extras = ["recommended"] }]
 validation = [{ name = "pandera", extras = ["polars"] }]
-viz-interactive = [{ name = "plotly" }]
-viz-static = [
+vis-interactive = [{ name = "plotly" }]
+vis-static = [
     { name = "matplotlib" },
     { name = "seaborn" },
 ]

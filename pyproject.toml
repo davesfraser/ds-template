@@ -65,13 +65,13 @@ validation = [
 ]
 
 # Static plotting / publication-style figures / EDA
-viz-static = [
+vis-static = [
     "matplotlib",
     "seaborn",
 ]
 
 # Interactive plots for exploration, demos, and marimo apps
-viz-interactive = [
+vis-interactive = [
     "plotly",
 ]
 

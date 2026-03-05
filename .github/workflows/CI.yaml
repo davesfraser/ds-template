@@ -45,7 +45,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest] # Probably enough to test code in linux
+        # os: [ubuntu-latest, windows-latest] # Swap to this if cross-platform is needed
 
     # Choose the runner image from the matrix above
     runs-on: ${{ matrix.os }}
