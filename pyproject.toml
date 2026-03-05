@@ -58,6 +58,14 @@ data = [
     "pyarrow",
 ]
 
+# Classical statistics and hypothesis testing
+# SciPy provides scipy.stats tests, distributions, resampling
+# statsmodels provides verbose summaries and formula based modelling
+stats = [
+  "scipy",
+  "statsmodels",
+]
+
 # Runtime dataframe validation
 # pandera supports multiple dataframe libraries, including pandas and polars
 validation = [
