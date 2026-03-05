@@ -1,44 +1,25 @@
 import marimo
 
+__generated_with = "0.20.4"
 app = marimo.App(width="full")
 
 
 @app.cell
-def __(mo):
-    mo.md(
-        """
-# Stats quickstarts
-
-Base R style building blocks in Python using SciPy plus statsmodels
-
-To run this notebook
-1 install groups
-   uv sync --group data --group notebook --group stats
-2 open marimo
-   uv run marimo edit marimo/02_stats_quickstarts.py
-
-If you use Polars for wrangling, do that first, then convert right at the stats layer
-df_pd = df_pl.to_pandas()
-"""
-    )
-    return
-
-
-@app.cell
-def __():
+def _():
+    import marimo as mo
     import numpy as np
     import pandas as pd
     import statsmodels.formula.api as smf
     from scipy import stats
     from statsmodels.stats.anova import anova_lm
 
-    rng = np.random.default_rng(42)
-    return anova_lm, np, pd, rng, smf, stats
+    return anova_lm, mo, np, pd, smf, stats
 
 
 @app.cell
-def __(mo, np, pd, rng):
+def _(np, pd):
     n = 80
+    rng = np.random.default_rng(42)
 
     a = rng.normal(loc=0.0, scale=1.0, size=n)
     b = rng.normal(loc=0.4, scale=1.1, size=n)
@@ -66,92 +47,119 @@ def __(mo, np, pd, rng):
         }
     )
     df_reg["y"] = 1.2 + 0.9 * df_reg["x1"] - 0.4 * df_reg["x2"] + rng.normal(scale=1.0, size=n)
-
-    mo.md("Synthetic example data created")
     return a, b, df_anova, df_reg, x, y
 
 
 @app.cell
-def __(mo, np, pd, stats, a, b):
-    mo.md("## 1 Welch two sample t test")
+def _(a, b, mo, np, pd, stats):
+    ttest_res = stats.ttest_ind(a, b, equal_var=False)
 
-    res = stats.ttest_ind(a, b, equal_var=False)
-
-    out = pd.DataFrame(
+    ttest_df = pd.DataFrame(
         {
-            "statistic": [res.statistic],
-            "pvalue": [res.pvalue],
-            "df": [getattr(res, "df", np.nan)],
+            "statistic": [ttest_res.statistic],
+            "pvalue": [ttest_res.pvalue],
+            "df": [getattr(ttest_res, "df", np.nan)],
         }
     )
 
     try:
-        ci = res.confidence_interval(confidence_level=0.95)
-        out["ci_low_95"] = ci.low
-        out["ci_high_95"] = ci.high
+        ci = ttest_res.confidence_interval(confidence_level=0.95)
+        ttest_df["ci_low_95"] = ci.low
+        ttest_df["ci_high_95"] = ci.high
     except Exception:
         pass
 
-    d = (np.mean(a) - np.mean(b)) / np.sqrt(
+    cohen_d = (np.mean(a) - np.mean(b)) / np.sqrt(
         ((np.std(a, ddof=1) ** 2) + (np.std(b, ddof=1) ** 2)) / 2
     )
-    out["cohen_d"] = d
+    ttest_df["cohen_d"] = cohen_d
 
-    return out
+
+    ttest_table = mo.ui.table(
+        data=ttest_df,
+        pagination=False,
+        label="Welch t test results",
+    )
+
+    ttest_table
+    return
 
 
 @app.cell
-def __(mo, pd, stats, x, y):
-    mo.md("## 2 Pearson correlation test")
+def _(mo, pd, stats, x, y):
+    corr_res = stats.pearsonr(x, y)
 
-    r = stats.pearsonr(x, y)
-
-    out = pd.DataFrame(
+    corr_df = pd.DataFrame(
         {
-            "r": [r.statistic],
-            "pvalue": [r.pvalue],
+            "r": [corr_res.statistic],
+            "pvalue": [corr_res.pvalue],
             "n": [len(x)],
         }
     )
-    return out
+
+    mo.vstack(
+        [
+            mo.md("## 2 Pearson correlation test"),
+            mo.ui.table(data=corr_df, pagination=False, label="Correlation results"),
+        ]
+    )
+    return
 
 
 @app.cell
-def __(mo, pd, stats):
-    mo.md("## 3 Chi square test of independence")
-
-    table = pd.DataFrame(
+def _(mo, pd, stats):
+    chi_table = pd.DataFrame(
         [[30, 10], [15, 25]],
         index=["A", "B"],
         columns=["Yes", "No"],
     )
 
-    chi2, p, dof, expected = stats.chi2_contingency(table.values)
+    chi2, p, dof, expected = stats.chi2_contingency(chi_table.values)
 
-    out = pd.DataFrame({"chi2": [chi2], "pvalue": [p], "dof": [dof]})
-    expected_df = pd.DataFrame(expected, index=table.index, columns=table.columns)
+    chi2_df = pd.DataFrame({"chi2": [chi2], "pvalue": [p], "dof": [dof]})
+    expected_df = pd.DataFrame(expected, index=chi_table.index, columns=chi_table.columns)
 
-    return table, out, expected_df
+    mo.vstack(
+        [
+            mo.md("## 3 Chi square test of independence"),
+            mo.ui.table(data=chi2_df, pagination=False, label="Test results"),
+            mo.ui.tabs(
+                {
+                    "Observed": mo.ui.table(data=chi_table, pagination=False, label="Observed"),
+                    "Expected": mo.ui.table(data=expected_df, pagination=False, label="Expected"),
+                }
+            ),
+        ]
+    )
+    return
 
 
 @app.cell
-def __(mo, anova_lm, smf, df_anova):
-    mo.md("## 4 One way ANOVA via statsmodels")
+def _(anova_lm, df_anova, mo, smf):
+    anova_model = smf.ols("value ~ C(group)", data=df_anova).fit()
+    anova_df = anova_lm(anova_model, typ=2)
 
-    model = smf.ols("value ~ C(group)", data=df_anova).fit()
-    table = anova_lm(model, typ=2)
-
-    return table
+    mo.vstack(
+        [
+            mo.md("## 4 One way ANOVA via statsmodels"),
+            mo.ui.table(data=anova_df, pagination=False, label="ANOVA table"),
+        ]
+    )
+    return
 
 
 @app.cell
-def __(mo, smf, df_reg):
-    mo.md("## 5 OLS regression summary")
+def _(df_reg, mo, smf):
+    ols_model = smf.ols("y ~ x1 + x2", data=df_reg).fit()
+    summary_text = ols_model.summary().as_text()
 
-    model = smf.ols("y ~ x1 + x2", data=df_reg).fit()
-    summary_text = model.summary().as_text()
-
-    return mo.code(summary_text)
+    mo.vstack(
+        [
+            mo.md("## 5 OLS regression summary"),
+            mo.plain_text(summary_text),
+        ]
+    )
+    return
 
 
 if __name__ == "__main__":
