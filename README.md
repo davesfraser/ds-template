@@ -71,6 +71,7 @@ uv sync
 uv sync --group notebook
 uv sync --group data --group ml
 uv sync --all-groups
+```
 
 ## Next steps
 
