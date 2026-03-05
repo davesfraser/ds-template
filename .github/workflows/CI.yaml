@@ -83,11 +83,15 @@ jobs:
       # Check formatting without rewriting files
       # Fails if formatting would change
       - name: Check formatting (ruff)
-        run: uv run ruff format --check .
+        run: uv run ruff format --check src tests
 
       # Run lint rules to catch bugs and enforce conventions
       - name: Lint (ruff)
         run: uv run ruff check src tests
+
+      # Check marimo notebooks for formatting issues
+      - name: Check marimo notebooks
+        run: uv run marimo check marimo
 
       # Run type checking to catch type errors before runtime
       - name: Type check (ty)

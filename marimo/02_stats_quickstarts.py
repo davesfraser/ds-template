@@ -76,14 +76,11 @@ def _(a, b, mo, np, pd, stats):
     )
     ttest_df["cohen_d"] = cohen_d
 
-
-    ttest_table = mo.ui.table(
+    mo.ui.table(
         data=ttest_df,
         pagination=False,
         label="Welch t test results",
     )
-
-    ttest_table
     return
 
 
