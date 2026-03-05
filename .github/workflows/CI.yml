@@ -1,0 +1,97 @@
+# This workflow is the automated quality gate for the repo
+# It runs the same checks developers should run locally
+# Install from the lockfile for repeatable builds
+# Formatting check
+# Lint check
+# Type checking
+# Tests
+#
+# This version runs on both Linux and Windows
+# Why
+# Linux is a common clean CI baseline
+# Windows matches your own development environment
+name: CI
+
+on:
+  # Run when code is pushed to main for example after a PR merge
+  push:
+    branches: ["main"]
+
+  # Run on every pull request so failures show up before merge
+  pull_request:
+
+  # Allow manual runs from the Actions UI
+  # Handy for the first run so required checks appear for branch rules
+  workflow_dispatch:
+
+# Keep permissions minimal this workflow only needs to read the code
+permissions:
+  contents: read
+
+# Cancel older runs when new commits arrive on the same branch or PR
+# Saves minutes and keeps results aligned with the latest commit
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    # Job label shown in the Checks UI
+    # Includes the operating system so each runner is easy to identify
+    name: CI on ${{ matrix.os }}
+
+    # Run the same job on multiple operating systems
+    # This helps catch cross platform issues such as paths shell behavior or package quirks
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    # Choose the runner image from the matrix above
+    runs-on: ${{ matrix.os }}
+
+    # Prevent a stuck job from running forever
+    timeout-minutes: 20
+
+    steps:
+      # Pull repository code into the runner
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install the Python version the project targets
+      # Use an explicit version to avoid surprise upgrades
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      # Install uv fast dependency manager and tool runner
+      # Caching speeds up future runs by reusing wheels and downloads
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      # Install dependencies exactly as pinned in the uv lockfile
+      # --frozen fails if the lockfile is out of date and prevents CI from updating it
+      # --all-groups installs every optional dependency group so optional stacks do not bit rot
+      # For faster CI later remove --all-groups to install only base plus dev
+      - name: Install dependencies (locked)
+        run: uv sync --frozen --all-groups
+
+      # Check formatting without rewriting files
+      # Fails if formatting would change
+      - name: Check formatting (ruff)
+        run: uv run ruff format --check .
+
+      # Run lint rules to catch bugs and enforce conventions
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      # Run type checking to catch type errors before runtime
+      - name: Type check (ty)
+        run: uv run ty check
+
+      # Run tests to validate behavior
+      - name: Run tests (pytest)
+        run: uv run pytest
