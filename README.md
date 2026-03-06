@@ -48,18 +48,22 @@ Why this is a good default:
 - it handles dependency groups cleanly
 - it lets you run project commands without needing a pile of shell-specific setup
 
+This template defines grouped dependencies so projects can stay tidy as they grow.
+
 By default, `uv sync` installs:
 
 - the base project dependencies
 - the `dev` dependency group
+- the `notebook` dependency group
+- the `data` dependency group
+- the `stats` dependency group
 
-Other groups are opt-in so a fresh project does not become bloated by default.
+This is intentional
+A fresh clone should allow a data scientist to have all the package dependencies they need to get started
+The remaining groups are opt-in so the default environment still stays somewhat focused rather than turning into a kitchen sink.
 
-Current optional groups in this template are:
+Optional groups in this template are:
 
-- `notebook`
-- `data`
-- `stats`
 - `validation`
 - `vis-static`
 - `vis-interactive`
@@ -69,8 +73,9 @@ Examples:
 
 ```bash
 uv sync
-uv sync --group notebook
-uv sync --group data --group ml
+uv sync --group validation
+uv sync --group vis-static --group vis-interactive
+uv sync --group ml
 uv sync --all-groups
 ```
 

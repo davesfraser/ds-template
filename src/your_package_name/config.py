@@ -1,26 +1,37 @@
 from __future__ import annotations
 
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from .paths import project_root
+
 # BaseSettings lets us load settings from environment variables
 # This is nicer than sprinkling os.getenv calls all over the project
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # A typed place for project settings
-    # Good for API keys, file paths, feature flags, and similar config
+    """Typed settings loaded from environment variables and the repo .env file"""
 
+    # Point directly at the repo .env file
+    # This avoids confusing behaviour where running code from a different folder
+    # causes the settings loader to miss the intended .env file
     model_config = SettingsConfigDict(
-        # Load values from a local .env file if present
-        env_file=".env",
+        env_file=project_root() / ".env",
         env_file_encoding="utf-8",
-        # Ignore extra env vars instead of crashing
-        # Helpful because real machines usually have lots of unrelated env vars
         extra="ignore",
     )
 
-    # Very small starter example setting
+    # Keep a harmless default so the template works straight away
+    # Teams can replace this with real settings as the project grows
     project_name: str = "your-project-name"
 
 
-# Create one shared settings object to import across the project
-settings = Settings()
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    """Return one cached Settings instance for the current process"""
+
+    # Load settings only when they are actually needed
+    # This avoids import-time failures later if someone adds required config fields
+    # The cache means we still create the settings object only once per process
+    return Settings()

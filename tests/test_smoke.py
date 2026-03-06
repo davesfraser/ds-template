@@ -1,11 +1,11 @@
-from __future__ import annotations
-
-# Import something simple from the package
-# This proves the package can be imported and basic config works
-from your_package_name.config import settings
+from your_package_name import get_settings
 
 
-def test_settings_load() -> None:
-    # Tiny smoke test
-    # Good starter test because it catches broken imports or config setup early
+def test_package_imports() -> None:
+    # Call the loader instead of importing a global settings object
+    # This matches the safer lazy-loading pattern used by the template
+    settings = get_settings()
+
+    # Keep the smoke test simple
+    # We just want to prove the package imports and basic settings access works
     assert settings.project_name == "your-project-name"

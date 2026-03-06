@@ -40,14 +40,12 @@ dev = [
     "pytest-cov",
     "hypothesis",
     "pre-commit",
-    "pandas-stubs",
 ]
 
 # marimo is the notebook/app workflow for this template,
 # ...let's ditch Jupyter notebooks, never to be seen again
 notebook = [
     "marimo[lsp,recommended]",
-    "marimo[lsp]",
 ]
 
 # Core dataframe/array stack
@@ -55,6 +53,7 @@ notebook = [
 data = [
     "numpy",
     "pandas",
+    "pandas-stubs",
     "polars",
     "pyarrow",
 ]
@@ -95,7 +94,7 @@ ml = [
 # plain "uv sync" installs the base project + dev tools
 # Other groups stay opt-in so the starter doesn't become bloated by default
 # i.e. you'll need to explicitly tell uv to install them...
-default-groups = ["dev", "notebook"]
+default-groups = ["dev", "notebook", "data", "stats"]
 
 [tool.hatch.build.targets.wheel]
 # Build the installable package from src/ using a proper src layout
@@ -196,7 +195,7 @@ ignore = [
 
 # marimo files are exploratory / notebook-like.
 # Keep them clean, but don't force full production-style typing there
-"marimo/**/*.py" = ["ANN", "F401", "F841"]
+"notebooks/marimo/**/*.py" = ["ANN", "F401", "F841"]
 
 # Re-exports in __init__.py are normal
 "__init__.py" = ["F401"]
