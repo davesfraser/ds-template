@@ -50,7 +50,7 @@ jobs:
       # This proves the template can still generate a valid project
       - name: Render sample project from template
         run: |
-          uvx --from copier copier copy . rendered --defaults --unsafe
+          uvx --from copier copier copy . rendered --defaults
 
       # Install dependencies inside the rendered project
       # Do not use --frozen because the generated project starts without a lockfile
