@@ -27,5 +27,16 @@
   "python.testing.pytestArgs": ["tests"],
 
   // Keep terminal activation predictable on Windows
-  "python.terminal.activateEnvironment": true
+  "python.terminal.activateEnvironment": true,
+
+   // Pylance type checking in the editor
+  // "basic" enables useful type diagnostics without the noise of full strict mode
+  // This is editor-only feedback and complements the CLI type checker we run via `ty`
+  "python.analysis.typeCheckingMode": "basic",
+
+  // Analyse the whole workspace, not just currently open files
+  // This catches type issues across modules earlier and keeps editor feedback consistent
+  "python.analysis.diagnosticMode": "workspace"
+
+
 }
