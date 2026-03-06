@@ -29,14 +29,14 @@ permissions:
 # Cancel older runs when new commits arrive on the same branch or PR
 # Saves minutes and keeps results aligned with the latest commit
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: {% raw %}ci-${{ github.workflow }}-${{ github.ref }}{% endraw %}
   cancel-in-progress: true
 
 jobs:
   quality:
     # Job label shown in the Checks UI
     # Includes the operating system so each runner is easy to identify
-    name: CI on ${{ matrix.os }}
+    name: {% raw %}CI on ${{ matrix.os }}{% endraw %}
 
     # Run the same job on multiple operating systems
     # This helps catch cross platform issues such as paths shell behavior or package quirks
@@ -47,7 +47,7 @@ jobs:
         # os: [ubuntu-latest, windows-latest] # Swap to this if cross-platform is needed
 
     # Choose the runner image from the matrix above
-    runs-on: ${{ matrix.os }}
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
 
     # Prevent a stuck job from running forever
     timeout-minutes: 20
