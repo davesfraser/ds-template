@@ -91,7 +91,7 @@ jobs:
 
       # Check marimo notebooks for formatting issues
       - name: Check marimo notebooks
-        run: uv run marimo check marimo
+        run: uv run marimo check notebooks/marimo
 
       # Run type checking to catch type errors before runtime
       - name: Type check (ty)
