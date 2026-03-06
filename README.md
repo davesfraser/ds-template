@@ -1,10 +1,7 @@
-# {{ project_name }}
-
-{{ project_description }}
-
-## 2026 Data science template
+# 2026 Data science template
 
 A modern Python data science project template with reproducible environments, a proper `src/` layout, fast tooling, and Git-friendly notebook-style exploration.
+***Read this first and later replace it with your own README!***
 
 ## What this template is
 
