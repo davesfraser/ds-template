@@ -1,11 +1,16 @@
-# your-project-name
+# {{ project_name }}
+
+{{ project_description }}
+
+## 2026 Data science template
 
 A modern Python data science project template with reproducible environments, a proper `src/` layout, fast tooling, and Git-friendly notebook-style exploration.
 
-## What it is
+## What this template is
 
 This repo is a starter template for Python data science projects using:
 
+- `copier` for instantiating project name throughout the template
 - `uv` for environment and dependency management
 - `hatchling` for packaging
 - `ruff` for linting and formatting
@@ -15,6 +20,14 @@ This repo is a starter template for Python data science projects using:
 
 The goal is to give you a strong default project structure from day one rather than starting with a loose folder of scripts and notebooks.
 
+## Create a new project from this template
+
+```bash
+uvx copier copy https://github.com/YOUR-ORG/YOUR-REPO.git my-new-project
+cd my-new-project
+uv sync
+code .
+```
 ## Why this template exists
 
 I wanted to create a starting point for data science projects that is relevant for 2026, it is designed to give you:

@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     # Keep a harmless default so the template works straight away
     # Teams can replace this with real settings as the project grows
-    project_name: str = "your-project-name"
+    project_name: str = "{{ project_slug }}"
 
 
 @lru_cache(maxsize=1)

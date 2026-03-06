@@ -8,18 +8,20 @@ build-backend = "hatchling.build"
 
 [project]
 # Package name, currently a placeholder
-name = "your-project-name"
+name = "{{ project_slug }}"
 
 # Keep versioning simple (static) in the template for now
 # You can switch to hatch-vcs later if you want tag-based releases
 version = "0.1.0"
 
-description = "A modern data science project template."
+description = "{{ project_description }}"
 readme = "README.md"
 
 # Main Python version target for the project, trying to go with 3.14 upwards
 # Ruff and ty can infer the project Python version from here
-requires-python = ">=3.14"
+requires-python = ">={{ python_min_version }}"
+
+authors = [{ name = "{{ author_name }}" }]
 
 license = { file = "LICENSE" }
 
@@ -99,7 +101,7 @@ default-groups = ["dev", "notebook", "data", "stats"]
 [tool.hatch.build.targets.wheel]
 # Build the installable package from src/ using a proper src layout
 # This avoids "works on my machine because repo root is importable" problems
-packages = ["src/your_package_name"]
+packages = ["src/{{ package_name }}"]
 
 [tool.pytest.ini_options]
 # Require a modern pytest
@@ -118,7 +120,7 @@ addopts = [
     "-ra",
     "--strict-config",
     "--strict-markers",
-    "--cov=your_package_name",
+    "--cov={{ package_name }}",
     "--cov-report=term-missing:skip-covered",
 ]
 
@@ -130,7 +132,7 @@ xfail_strict = true
 branch = true
 
 # Only measure your package, not tests or tooling code.
-source = ["your_package_name"]
+source = ["{{ package_name }}"]
 
 [tool.coverage.report]
 show_missing = true

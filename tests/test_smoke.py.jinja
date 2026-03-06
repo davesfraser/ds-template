@@ -1,4 +1,4 @@
-from your_package_name import get_settings
+from {{ package_name }} import get_settings
 
 
 def test_package_imports() -> None:
@@ -8,4 +8,4 @@ def test_package_imports() -> None:
 
     # Keep the smoke test simple
     # We just want to prove the package imports and basic settings access works
-    assert settings.project_name == "your-project-name"
+    assert settings.project_name == "{{ project_slug }}"

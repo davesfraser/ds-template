@@ -1,0 +1,38 @@
+_templates_suffix: .jinja
+
+project_name:
+  type: str
+  help: What is the title of your project? (Human readable)
+  default: Data science project
+
+project_slug:
+  type: str
+  help: What is the repository and package distribution name? (kebab-case)
+  default: data-science-project
+
+package_name:
+  type: str
+  help: What is the Python import package name? (snake_case)
+  default: data_science_project
+
+project_description:
+  type: str
+  help: Provide a a one line description for pyproject and README
+  default: Modern Python data science project
+
+author_name:
+  type: str
+  help: What is the name of the main author or team name?
+  default: Your Name
+
+python_min_version:
+  type: str
+  help: What is the minimum supported Python version (recommend 3.14)
+  default: "3.14"
+
+_exclude:
+  - "uv.lock"
+  - ".venv"
+  - ".pytest_cache"
+  - ".ruff_cache"
+  - "__pycache__"
