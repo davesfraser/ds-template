@@ -46,7 +46,8 @@ dev = [
 # marimo is the notebook/app workflow for this template,
 # ...let's ditch Jupyter notebooks, never to be seen again
 notebook = [
-    "marimo[recommended]",
+    "marimo[lsp,recommended]",
+    "marimo[lsp]",
 ]
 
 # Core dataframe/array stack
