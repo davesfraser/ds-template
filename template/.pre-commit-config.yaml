@@ -1,0 +1,40 @@
+# Run fast checks before each commit
+# Goal: catch easy mistakes locally instead of in CI
+
+repos:
+  # Small general-purpose file hygiene checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # Remove trailing spaces
+      - id: trailing-whitespace
+
+      # Ensure files end with a newline
+      - id: end-of-file-fixer
+
+      # Validate TOML files like pyproject.toml
+      - id: check-toml
+
+      # Validate YAML files like GitHub Actions and this file
+      - id: check-yaml
+
+      # Catch accidentally committed merge markers
+      - id: check-merge-conflict
+
+  # Keep uv.lock in sync with pyproject.toml
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.10.8
+    hooks:
+      - id: uv-lock
+
+  # Ruff handles linting and formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.4
+    hooks:
+      # Lint and auto-fix what is safe to fix
+      - id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^(src|tests)/
+
+      # Apply Ruff formatting
+      - id: ruff-format
