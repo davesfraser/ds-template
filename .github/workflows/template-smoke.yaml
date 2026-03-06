@@ -1,0 +1,84 @@
+# This workflow checks the template itself
+# It renders a sample project from the template and verifies the generated project works
+# Keep this workflow only in the template repo (i.e. make sure copier.yaml actively excludes it)
+
+name: Template smoke test
+
+on:
+  # Run on pushes to main so the template stays healthy after merges
+  push:
+    branches: ["main"]
+
+  # Run on pull requests so template breakages are caught before merge
+  pull_request:
+
+  # Allow manual runs from the Actions tab when needed
+  workflow_dispatch:
+
+# This workflow only needs to read repository contents
+permissions:
+  contents: read
+
+jobs:
+  render-and-test:
+    # Use one Linux runner for a fast smoke check
+    runs-on: ubuntu-latest
+
+    # Prevent the job hanging forever
+    timeout-minutes: 20
+
+    steps:
+      # Check out the template repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install the Python version expected by the generated project
+      # Keep this explicit so CI behaviour stays predictable
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      # Install uv for environment and command management
+      # Enable cache to speed up repeat runs
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      # Render a sample project from this Copier template
+      # This proves the template can still generate a valid project
+      - name: Render sample project from template
+        run: |
+          uvx --from copier copier copy . rendered --defaults --unsafe
+
+      # Install dependencies inside the rendered project
+      # Do not use --frozen because the generated project starts without a lockfile
+      - name: Install dependencies for rendered project
+        working-directory: rendered
+        run: uv sync --all-groups
+
+      # Check formatting in the rendered project
+      - name: Check formatting (ruff)
+        working-directory: rendered
+        run: uv run ruff format --check .
+
+      # Run lint checks in the rendered project
+      - name: Lint (ruff)
+        working-directory: rendered
+        run: uv run ruff check .
+
+      # Check marimo notebooks in the rendered project
+      - name: Check marimo notebooks
+        working-directory: rendered
+        run: uv run marimo check notebooks/marimo
+
+      # Run type checking in the rendered project
+      - name: Type check (ty)
+        working-directory: rendered
+        run: uv run ty check
+
+      # Run tests in the rendered project
+      - name: Run tests (pytest)
+        working-directory: rendered
+        run: uv run pytest -q

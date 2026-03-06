@@ -10,17 +10,23 @@ A modern Python data science project template with reproducible environments, a 
 
 This repo is a starter template for Python data science projects using:
 
-- `copier` for instantiating project name throughout the template
+- `copier` for converting this template into a personalised project
 - `uv` for environment and dependency management
 - `hatchling` for packaging
 - `ruff` for linting and formatting
 - `ty` for type checking
 - `pytest` for tests
 - `marimo` for notebook-style exploration as `.py` files
+- Ships with basic CI testing for all code pushed to master, see `.github/workflows/CI.yaml`)
 
 The goal is to give you a strong default project structure from day one rather than starting with a loose folder of scripts and notebooks.
 
 ## Create a new project from this template
+
+**NOTE: Recommended path for users wanting to utilise this template for a project is ***copier*****
+
+- Copier handles renaming the project and package to meet your requirements, it also excludes any files that are not needed
+- Github offers 'Use this template' but don't use it. Copier is super simple, uv can temporarily and seamlessly install copier and also convert the template for you in one line!
 
 ```bash
 uvx copier copy https://github.com/YOUR-ORG/YOUR-REPO.git my-new-project
@@ -28,6 +34,7 @@ cd my-new-project
 uv sync
 code .
 ```
+
 ## Why this template exists
 
 I wanted to create a starting point for data science projects that is relevant for 2026, it is designed to give you:
@@ -44,9 +51,7 @@ I wanted to create a starting point for data science projects that is relevant f
 ### Python version
 
 This template targets **Python 3.14+** by default via `pyproject.toml`.
-
 That means the tooling, type checking, linting, and CI are all set up around a modern Python baseline rather than trying to support a wide historical range of versions.
-
 If your project needs broader compatibility, change `requires-python` in `pyproject.toml` and update CI to test the versions that you care about.
 
 ### Dependency management with uv

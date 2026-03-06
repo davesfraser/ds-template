@@ -6,10 +6,8 @@
 # Type checking
 # Tests
 #
-# This version runs on both Linux and Windows
-# Why
-# Linux is a common clean CI baseline
-# Windows matches your own development environment
+# This version can run on both Linux and Windows
+
 name: CI
 
 on:
@@ -64,7 +62,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: "{{ python_min_version }}"
 
       # Install uv fast dependency manager and tool runner
       # Caching speeds up future runs by reusing wheels and downloads
