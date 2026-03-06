@@ -49,7 +49,7 @@ I wanted to create a starting point for data science projects that is relevant f
 
 This template targets **Python 3.14+** by default via `pyproject.toml`.
 That means the tooling, type checking, linting, and CI are all set up around a modern Python baseline rather than trying to support a wide historical range of versions.
-If your project needs broader compatibility, change `requires-python` in `pyproject.toml` and update CI to test the versions that you care about.
+If your project needs broader compatibility you can request a different version upon setup with copier.
 
 ### Dependency management with uv
 
