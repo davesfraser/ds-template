@@ -29,6 +29,4 @@ DATA_EXTERNAL = DATA_DIR / "external"  # third-party / downloaded data
 
 MODELS_DIR = project_root() / "models"  # serialised models and artefacts
 FIGURES_DIR = project_root() / "reports" / "figures"  # generated plots and charts
-NOTEBOOKS_DIR = (
-    project_root() / "notebooks"
-)  # useful if scripts need to reference notebooks
+NOTEBOOKS_DIR = project_root() / "notebooks"  # useful if scripts need to reference notebooks
