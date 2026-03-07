@@ -21,7 +21,7 @@ def test_settings_load() -> None:
     # Check that the settings object loads without errors and that the project
     # name matches what was set during copier setup
     settings = get_settings()
-    assert settings.project_name == "{{ package_name }}"
+    assert settings.project_name == "{{ project_slug }}"
 
 
 def test_version_resolves() -> None:
