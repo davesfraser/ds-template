@@ -17,7 +17,7 @@ version = "0.1.0"
 description = "{{ project_description }}"
 readme = "README.md"
 
-# Main Python version target for the project, trying to go with 3.14 upwards
+# Minimum supported Python version for the project
 # Ruff and ty can infer the project Python version from here
 requires-python = ">={{ python_min_version }}"
 
@@ -45,7 +45,7 @@ dev = [
 ]
 
 # marimo is the notebook/app workflow for this template,
-# ...let's ditch Jupyter notebooks, never to be seen again
+# let's keep exploratory work Git-friendly and Python-native
 notebook = [
     "marimo[lsp,recommended]",
 ]

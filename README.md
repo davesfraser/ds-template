@@ -14,9 +14,20 @@ This repo is a starter template for Python data science projects using:
 - `ty` for type checking
 - `pytest` for tests
 - `marimo` for notebook-style exploration as `.py` files
-- Ships with basic CI testing for all code pushed to master, see `.github/workflows/CI.yaml`)
+- ships with basic CI checks for pushes to `main` and for pull requests, see `.github/workflows/CI.yaml`
 
 The goal is to give you a strong default project structure from day one rather than starting with a loose folder of scripts and notebooks.
+
+## Who this template is for
+
+This template is aimed at code-first data science practitioners and small teams who want:
+
+- reusable project code in `src/`
+- exploratory work kept separate in notebooks
+- modern Python tooling without a large framework
+- a Git-friendly notebook workflow via marimo
+
+It is a better fit for projects where exploration is expected to mature into maintainable code than for Jupyter-heavy, ad hoc notebook-only work.
 
 ## Create a new project from this template
 
@@ -29,6 +40,7 @@ The goal is to give you a strong default project structure from day one rather t
 uvx copier copy https://github.com/YOUR-ORG/YOUR-REPO.git my-new-project
 cd my-new-project
 uv sync
+uv run pre-commit install
 code .
 ```
 
@@ -39,7 +51,7 @@ I wanted to create a starting point for data science projects that is relevant f
 - a real `src/` package layout
 - clean tooling from the start
 - reproducible environments via a lockfile
-- notebook-style exploration in `notebooks/marimo/` without hidden state all over the place (Jupyter begone!)
+-  notebook-style exploration in `notebooks/marimo/` with cleaner diffs and less hidden state than traditional notebook files
 - a setup that works well with git and VS Code
 - lightweight packaging so the project behaves like a real Python package, not just a folder on your machine
 
@@ -73,8 +85,7 @@ By default, `uv sync` installs:
 - the `data` dependency group
 - the `stats` dependency group
 
-This is intentional
-A fresh clone should allow a data scientist to have all the package dependencies they need to get started
+This is intentional. A fresh clone should allow a data scientist to have all the package dependencies they need to get started.
 The remaining groups are opt-in so the default environment still stays somewhat focused rather than turning into a kitchen sink.
 
 Optional groups in this template are:
@@ -105,6 +116,7 @@ uv sync --all-groups
 | Run tests | `uv run pytest` |
 | Full quality check (matches CI) | `uv run ruff format --check . && uv run ruff check src tests notebooks && uv run ty check && uv run pytest` |
 | Open exploration notebook | `uv run marimo edit notebooks/marimo/01_exploration.py` |
+| Build package | `uv build` |
 
 ### Type checking — `ty`
 
@@ -144,7 +156,23 @@ You might want to add:
 - `DSPy` if you want a more programmatic approach to LM workflows
 - `OpenTelemetry` for tracing and observability
 
-### General advice
-Add these only when or if the project actually needs them!
+### Adding dependencies
 
-Best practice is to start with a clean reproducible baseline.
+Use `uv add` to keep `pyproject.toml` and the environment in sync.
+
+As a rule of thumb:
+
+- put packages in the base dependency list if they are imported by code in `src/`
+- put tooling in `dev`
+- put optional project capabilities in a named dependency group
+
+Examples:
+
+```bash
+uv add duckdb
+uv add --dev mypy
+uv add --group vis-static matplotlib seaborn
+uv add --group ml xgboost
+
+### General advice
+Add these only when or if the project actually needs them! Best practice is to start with a clean reproducible baseline.

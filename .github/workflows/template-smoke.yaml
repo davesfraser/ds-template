@@ -85,3 +85,9 @@ jobs:
       - name: Run tests (pytest)
         working-directory: rendered
         run: uv run pytest -q
+
+      # Build the generated project as both a wheel and source distribution
+      # This catches packaging/config issues that editable installs and tests may miss
+      - name: Build package
+        working-directory: rendered
+        run: uv build

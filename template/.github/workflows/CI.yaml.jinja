@@ -98,3 +98,8 @@ jobs:
       # Run tests to validate behavior
       - name: Run tests (pytest)
         run: uv run pytest
+
+      # Build the generated project as both a wheel and source distribution
+      # This catches packaging/config issues that editable installs and tests may miss
+      - name: Build package
+        run: uv build

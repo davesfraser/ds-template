@@ -25,7 +25,7 @@ repos:
       # Users often accidentally stage CSVs, parquets, model binaries etc.
       # 500KB is a reasonable default; increase if your raw data is legitimately small
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: ["--maxkb=2000"]
 
       # Catch accidentally committed private keys or credentials
       - id: detect-private-key

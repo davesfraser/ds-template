@@ -12,7 +12,7 @@ repos:
       # DS projects often accidentally stage CSVs, Parquet files, or model
       # binaries. This stops them before they bloat the repo history forever
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: ["--maxkb=2000"]
 
       # Catches private keys and PEM blocks — important if your project
       # touches API keys, cloud credentials, or database passwords via .env
