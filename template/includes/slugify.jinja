@@ -1,7 +1,0 @@
-{% macro kebab(value) -%}
-{{ value | lower | replace(" ", "-") | replace("_", "-") }}
-{%- endmacro %}
-
-{% macro snake(value) -%}
-{{ value | lower | replace(" ", "_") | replace("-", "_") }}
-{%- endmacro %}

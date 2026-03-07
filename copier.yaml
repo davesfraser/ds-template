@@ -13,7 +13,7 @@ project_name:
 project_slug:
   type: str
   help: Repository name used for the project distribution name
-  default: "{% from pathjoin('includes', 'slugify.jinja') import kebab %}{{ kebab(project_name) }}"
+  default: "{{ project_name | lower | replace(' ', '-') | replace('_', '-') }}"
   validator: >-
     {% if not (project_slug | regex_search('^[a-z][a-z0-9-]+$')) %}
     project_slug must be lowercase kebab-case — letters, numbers, and hyphens only (e.g. my-ds-project)
@@ -22,7 +22,7 @@ project_slug:
 package_name:
   type: str
   help: Python import package name
-  default: "{% from pathjoin('includes', 'slugify.jinja') import snake %}{{ snake(project_slug) }}"
+  default: "{{ project_slug | replace('-', '_') }}"
   validator: >-
     {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$')) %}
     package_name must be snake_case — letters, numbers, and underscores only (e.g. my_ds_project)
