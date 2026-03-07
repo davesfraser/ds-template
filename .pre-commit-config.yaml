@@ -46,7 +46,7 @@ repos:
       # Lint and auto-fix what is safe to fix
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
-        files: ^(src|tests)/
+        files: ^template/(src|tests|notebooks)/
 
       # Apply Ruff formatting
       - id: ruff-format

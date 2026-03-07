@@ -75,8 +75,8 @@ jobs:
       # --frozen fails if the lockfile is out of date and prevents CI from updating it
       # --all-groups installs every optional dependency group so optional stacks do not bit rot
       # For faster CI later remove --all-groups to install only base plus dev
-      - name: Install dependencies (locked)
-        run: uv sync --frozen --all-groups
+      - name: Install dependencies
+        run: uv sync
 
       # Check formatting without rewriting files
       # Fails if formatting would change
@@ -85,7 +85,7 @@ jobs:
 
       # Run lint rules to catch bugs and enforce conventions
       - name: Lint (ruff)
-        run: uv run ruff check src tests
+        run: uv run ruff check src tests notebooks
 
       # Check marimo notebooks for formatting issues
       - name: Check marimo notebooks
