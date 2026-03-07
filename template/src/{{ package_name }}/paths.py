@@ -4,10 +4,31 @@ from pathlib import Path
 
 
 def project_root() -> Path:
-    # Find the repo root from this file location
-    # Useful in DS projects because code often needs stable paths to data/, models/, reports/, etc
+    """Return the absolute path to the repo root.
+
+    Works regardless of where you run your code from, which matters when
+    scripts, notebooks, and scheduled jobs all have different working directories.
+    """
+    # This file lives at src/<package>/paths.py, so three levels up is the root.
     return Path(__file__).resolve().parents[2]
 
 
-# Common path constant for data files
+# Path constants for every folder the template creates
+# Import these directly rather than rebuilding paths from strings throughout
+# your code — it keeps things consistent and easy to refactor
+#
+# Example:
+#   from {{ package_name }}.paths import DATA_RAW, MODELS_DIR
+#   df = pd.read_parquet(DATA_RAW / "survey_2024.parquet")
+
 DATA_DIR = project_root() / "data"
+DATA_RAW = DATA_DIR / "raw"  # original inputs — treat as read-only
+DATA_INTERIM = DATA_DIR / "interim"  # partially processed
+DATA_PROCESSED = DATA_DIR / "processed"  # clean, analysis-ready outputs
+DATA_EXTERNAL = DATA_DIR / "external"  # third-party / downloaded data
+
+MODELS_DIR = project_root() / "models"  # serialised models and artefacts
+FIGURES_DIR = project_root() / "reports" / "figures"  # generated plots and charts
+NOTEBOOKS_DIR = (
+    project_root() / "notebooks"
+)  # useful if scripts need to reference notebooks

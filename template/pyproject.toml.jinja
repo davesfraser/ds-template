@@ -10,8 +10,8 @@ build-backend = "hatchling.build"
 # Package name, currently a placeholder
 name = "{{ project_slug }}"
 
-# Keep versioning simple (static) in the template for now
-# You can switch to hatch-vcs later if you want tag-based releases
+# Don't also define __version__ in __init__.py — importlib.metadata reads
+# this value at runtime. One place to change it = zero drift
 version = "0.1.0"
 
 description = "{{ project_description }}"
@@ -217,6 +217,18 @@ preview = false
 
 # Also format Python code in docstrings
 docstring-code-format = true
+
+# ty is Astral's type checker, built to pair with ruff
+# It's fast and works well for most DS code, but it's still pre-1.0 as of
+# early 2026, so you may hit occasional false positives or missing inference
+# on more complex types
+#
+# To suppress a specific false positive on one line:
+#   result = some_call()  # ty: ignore[possibly-unbound]
+#
+# If you need mypy (e.g. for mypy plugins or django-stubs), add it to the
+# dev group and run both — they coexist fine and cover different gaps
+# Track what ty has fixed: https://github.com/astral-sh/ty/releases
 
 [tool.ty.src]
 # Type-check package code and tests

@@ -1,11 +1,59 @@
-from {{ package_name }} import get_settings
+from pathlib import Path
+
+# Import the version string and settings loader from your package
+from {{ package_name }} import __version__, get_settings
+
+# Import every path constant from paths.py so we can verify they all behave correctly
+from {{ package_name }}.paths import (
+    DATA_DIR,
+    DATA_EXTERNAL,
+    DATA_INTERIM,
+    DATA_PROCESSED,
+    DATA_RAW,
+    FIGURES_DIR,
+    MODELS_DIR,
+    NOTEBOOKS_DIR,
+    project_root,
+)
 
 
-def test_package_imports() -> None:
-    # Call the loader instead of importing a global settings object
-    # This matches the safer lazy-loading pattern used by the template
+def test_settings_load() -> None:
+    # Check that the settings object loads without errors and that the project
+    # name matches what was set during copier setup
     settings = get_settings()
-
-    # Keep the smoke test simple
-    # We just want to prove the package imports and basic settings access works
     assert settings.project_name == "{{ project_slug }}"
+
+
+def test_version_resolves() -> None:
+    # Check that the package version is a real string, not the "0.0.0+unknown"
+    # fallback that appears when the package hasn't been installed yet
+    # If this fails, run `uv sync` and try again
+    assert isinstance(__version__, str)
+    assert __version__ != "0.0.0+unknown", (
+        "Version is the fallback sentinel — run `uv sync` to install the package."
+    )
+
+
+def test_project_root_exists() -> None:
+    # Check that project_root() points at a folder that actually exists on disk
+    assert project_root().is_dir()
+
+
+def test_all_path_constants_are_paths_under_root() -> None:
+    # Check every path constant defined in paths.py in one go
+    root = project_root()
+    constants = [
+        DATA_DIR, DATA_RAW, DATA_INTERIM, DATA_PROCESSED, DATA_EXTERNAL,
+        MODELS_DIR, FIGURES_DIR, NOTEBOOKS_DIR,
+    ]
+    for p in constants:
+        # Each constant should be a Path object, not an accidental plain string
+        assert isinstance(p, Path), f"Expected Path, got {type(p)}"
+
+        # Each constant should live somewhere inside the project root
+        # If this fails it usually means paths.py and the actual folder
+        # layout have drifted out of sync
+        assert p.is_relative_to(root), (
+            f"{p.name} is not under the project root — "
+            "paths.py and the folder layout may be out of sync"
+        )

@@ -47,7 +47,7 @@ I wanted to create a starting point for data science projects that is relevant f
 
 ### Python version
 
-This template targets **Python 3.14+** by default via `pyproject.toml`.
+This template targets **Python 3.13+** by default via `pyproject.toml`.
 That means the tooling, type checking, linting, and CI are all set up around a modern Python baseline rather than trying to support a wide historical range of versions.
 If your project needs broader compatibility you can request a different version upon setup with copier.
 
@@ -105,6 +105,20 @@ uv sync --all-groups
 | Run tests | `uv run pytest` |
 | Full quality check (matches CI) | `uv run ruff format --check . && uv run ruff check src tests notebooks && uv run ty check && uv run pytest` |
 | Open exploration notebook | `uv run marimo edit notebooks/marimo/01_exploration.py` |
+
+### Type checking — `ty`
+
+This template uses [`ty`](https://github.com/astral-sh/ty) for type checking. It's fast,
+built by the same team as `ruff` and `uv`, and handles the vast majority of DS code well.
+
+One thing to know: `ty` is pre-1.0, so you may occasionally hit a false positive.
+Suppress it inline with a comment rather than working around it in your code:
+```python
+result = some_untyped_call()  # ty: ignore[possibly-unbound]
+```
+
+If your project needs `mypy` (e.g. for mypy plugins), just add it to the `dev` group
+alongside `ty` — they coexist fine.
 
 ## Next steps
 

@@ -106,6 +106,20 @@ uv sync --all-groups
 | Full quality check (matches CI) | `uv run ruff format --check . && uv run ruff check src tests notebooks && uv run ty check && uv run pytest` |
 | Open exploration notebook | `uv run marimo edit notebooks/marimo/01_exploration.py` |
 
+### Type checking — `ty`
+
+This template uses [`ty`](https://github.com/astral-sh/ty) for type checking. It's fast,
+built by the same team as `ruff` and `uv`, and handles the vast majority of DS code well.
+
+One thing to know: `ty` is pre-1.0, so you may occasionally hit a false positive.
+Suppress it inline with a comment rather than working around it in your code:
+```python
+result = some_untyped_call()  # ty: ignore[possibly-unbound]
+```
+
+If your project needs `mypy` (e.g. for mypy plugins), just add it to the `dev` group
+alongside `ty` — they coexist fine.
+
 ## Next steps
 
 This template is a strong baseline, not a kitchen sink!

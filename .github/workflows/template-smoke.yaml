@@ -37,7 +37,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          # Reads from .python-version at the repo root
+          # When you update the copier default, update .python-version too —
+          # this workflow will pick it up automatically from there
+          python-version-file: ".python-version"
 
       # Install uv for environment and command management
       # Enable cache to speed up repeat runs

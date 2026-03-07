@@ -1,14 +1,19 @@
-# Marks your project as a real Python package
-# This file defines what the package exposes at top level
+# This file makes the folder a proper Python package and controls
+# what you get when you do `from {{ package_name }} import ...`
+
+from importlib.metadata import PackageNotFoundError, version
 
 from .config import Settings, get_settings
 
-# Re-export the settings type and loader so users have one clean import path
-# Export get_settings rather than a pre-built settings object
-# This keeps package import simple and avoids hidden side effects during import
 __all__ = ["Settings", "__version__", "get_settings"]
 
-# Single source of truth for the package version
-# Matches the version in pyproject.toml
-# Usage: from {{ package_name }} import __version__
-__version__ = "0.1.0"
+# Read the version from the installed package metadata, which is written
+# by hatchling from pyproject.toml at install time
+# This means pyproject.toml is the only place you ever need to change it
+try:
+    __version__ = version(__name__)
+except PackageNotFoundError:  # pragma: no cover
+    # Fallback for the rare case where someone runs files directly
+    # before running `uv sync`. Returns a sentinel so the import
+    # still works rather than crashing.
+    __version__ = "0.0.0+unknown"
