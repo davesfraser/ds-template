@@ -26,7 +26,7 @@ package_name:
 
 project_description:
   type: str
-  help: Provide a a one line description for pyproject and README
+  help: Provide a one line description for pyproject and README
   default: Modern Python data science project
 
 author_name:
@@ -47,8 +47,6 @@ python_min_version:
     - "3.12"
     - "3.13"
     - "3.14"
-  # Prevents typos like "3.1.3" or "python3.13" silently producing
-  # a broken pyproject.toml.
   validator: >-
     {% if not (python_min_version | regex_search('^3\\.\\d+$')) %}
     python_min_version must look like 3.12, 3.13, or 3.14
@@ -60,3 +58,13 @@ _exclude:
   - ".venv"
   - ".pytest_cache"
   - ".ruff_cache"
+
+_message_after_copy: |
+  Next steps
+
+    cd <your-project-directory>
+    uv sync
+    uv run pre-commit install
+    git add .
+    git add uv.lock
+    git commit -m "Initial project from template"

@@ -1,94 +1,81 @@
-# 2026 Data science template
+# 2026 Python data science template
 
-A modern Python data science project template with reproducible environments, a proper `src/` layout, fast tooling, and Git-friendly notebook-style exploration.
-***Read this first and later replace it with your own README!***
+A modern Python data science project template for practitioners who want to start quickly without ending up with a messy repo.
 
 ## What this template is
 
-This repo is a starter template for Python data science projects using:
+This template is for code-first data science work where exploratory analysis is expected to mature into maintainable project code.
 
-- `copier` for converting this template into a personalised project
-- `uv` for environment and dependency management
-- `hatchling` for packaging
-- `ruff` for linting and formatting
-- `ty` for type checking
-- `pytest` for tests
-- `marimo` for notebook-style exploration as `.py` files
-- ships with basic CI checks for pushes to `main` and for pull requests, see `.github/workflows/CI.yaml`
+It gives you:
 
-The goal is to give you a strong default project structure from day one rather than starting with a loose folder of scripts and notebooks.
+- a real `src/` package layout
+- fast modern tooling with `uv`, `ruff`, `ty`, and `pytest`
+- Git-friendly notebook-style work with marimo
+- sensible VS Code defaults
+- a lightweight CI baseline
+- dependency groups that are easy to extend
+
+It is **not** aimed at notebook-only or Jupyter-heavy workflows where almost everything lives in `.ipynb` files.
 
 ## Who this template is for
 
-This template is aimed at code-first data science practitioners and small teams who want:
+This is a good fit for:
 
-- reusable project code in `src/`
-- exploratory work kept separate in notebooks
-- modern Python tooling without a large framework
-- a Git-friendly notebook workflow via marimo
+- solo data scientists who want a clean starting point
+- small DS teams who want consistent project structure
+- analytics or modelling projects that will grow into reusable code
+- people who like notebooks for exploration but want version-controlled Python files
 
-It is a better fit for projects where exploration is expected to mature into maintainable code than for Jupyter-heavy, ad hoc notebook-only work.
+It may not be a good fit for:
+
+- pure package/library templates
+- heavyweight MLOps platforms
+- notebook-only exploratory work with no intention of moving logic into `src/`
 
 ## Create a new project from this template
 
-**NOTE: Recommended path for users wanting to utilise this template for a project is ***copier*****
+Use Copier, not GitHub's "Use this template" button.
 
-- Copier handles renaming the project and package to meet your requirements, it also excludes any files that are not needed
-- Github offers 'Use this template' but don't use it. Copier is super simple, uv can temporarily and seamlessly install copier and also convert the template for you in one line!
+Copier handles project naming, package naming, and file rendering properly.
 
 ```bash
 uvx copier copy https://github.com/YOUR-ORG/YOUR-REPO.git my-new-project
 cd my-new-project
+```
+
+## First 5 minutes in a new project
+
+Set up the environment, install Git hooks, create the lockfile, and make the first commit.
+
+```bash
 uv sync
 uv run pre-commit install
+git add .
+git add uv.lock
+git commit -m "Initial project from template"
 code .
 ```
 
-## Why this template exists
+Run the local checks once so you know the project is healthy before making changes.
 
-I wanted to create a starting point for data science projects that is relevant for 2026, it is designed to give you:
+```bash
+uv run ruff format --check .
+uv run ruff check src tests notebooks
+uv run ty check
+uv run pytest
+```
 
-- a real `src/` package layout
-- clean tooling from the start
-- reproducible environments via a lockfile
--  notebook-style exploration in `notebooks/marimo/` with cleaner diffs and less hidden state than traditional notebook files
-- a setup that works well with git and VS Code
-- lightweight packaging so the project behaves like a real Python package, not just a folder on your machine
+## Dependency groups
 
-## Template defaults and design choices
+`uv sync` installs:
 
-### Python version
+- base project dependencies
+- `dev`
+- `notebook`
+- `data`
+- `stats`
 
-This template targets **Python 3.13+** by default via `pyproject.toml`.
-That means the tooling, type checking, linting, and CI are all set up around a modern Python baseline rather than trying to support a wide historical range of versions.
-If your project needs broader compatibility you can request a different version upon setup with copier.
-
-### Dependency management with uv
-
-This template uses `uv` as the main workflow tool for Python environments, dependencies, lockfiles, and command execution.
-
-Why this is a good default:
-
-- it is fast
-- it keeps project setup simple
-- it gives you a lockfile for reproducible installs
-- it handles dependency groups cleanly
-- it lets you run project commands without needing a pile of shell-specific setup
-
-This template defines grouped dependencies so projects can stay tidy as they grow.
-
-By default, `uv sync` installs:
-
-- the base project dependencies
-- the `dev` dependency group
-- the `notebook` dependency group
-- the `data` dependency group
-- the `stats` dependency group
-
-This is intentional. A fresh clone should allow a data scientist to have all the package dependencies they need to get started.
-The remaining groups are opt-in so the default environment still stays somewhat focused rather than turning into a kitchen sink.
-
-Optional groups in this template are:
+Optional groups are available for project-specific needs:
 
 - `validation`
 - `vis-static`
@@ -105,66 +92,15 @@ uv sync --group ml
 uv sync --all-groups
 ```
 
-## Common commands
+## Adding dependencies
 
-| Task | Command |
-|------|---------|
-| Install all dependencies | `uv sync --all-groups` |
-| Format code | `uv run ruff format .` |
-| Lint | `uv run ruff check src tests notebooks` |
-| Type check | `uv run ty check` |
-| Run tests | `uv run pytest` |
-| Full quality check (matches CI) | `uv run ruff format --check . && uv run ruff check src tests notebooks && uv run ty check && uv run pytest` |
-| Open exploration notebook | `uv run marimo edit notebooks/marimo/01_exploration.py` |
-| Build package | `uv build` |
+Use `uv add` instead of hand-editing `pyproject.toml` where possible.
 
-### Type checking — `ty`
+Use these rules:
 
-This template uses [`ty`](https://github.com/astral-sh/ty) for type checking. It's fast,
-built by the same team as `ruff` and `uv`, and handles the vast majority of DS code well.
-
-One thing to know: `ty` is pre-1.0, so you may occasionally hit a false positive.
-Suppress it inline with a comment rather than working around it in your code:
-```python
-result = some_untyped_call()  # ty: ignore[possibly-unbound]
-```
-
-If your project needs `mypy` (e.g. for mypy plugins), just add it to the `dev` group
-alongside `ty` — they coexist fine.
-
-## Next steps
-
-This template is a strong baseline, not a kitchen sink!
-
-Depending on the kind of project, you may want to add a few extra tools later:
-
-### For data science projects
-You might want to add:
-- `DuckDB` for fast local analytics and SQL-first exploration
-- `DVC` if data or model artefacts get too large for Git or change often
-
-### For machine learning projects
-You might want to add:
-- `MLflow` for experiment tracking and model lifecycle
-- `XGBoost` or `LightGBM` for boosted tree models
-- `PyTorch` if you are training neural networks
-
-### For AI and LLM projects
-You might want to add:
-- `LangChain` or `LangGraph` for agent and tool-calling workflows
-- `LlamaIndex` for retrieval-heavy or RAG-style applications
-- `DSPy` if you want a more programmatic approach to LM workflows
-- `OpenTelemetry` for tracing and observability
-
-### Adding dependencies
-
-Use `uv add` to keep `pyproject.toml` and the environment in sync.
-
-As a rule of thumb:
-
-- put packages in the base dependency list if they are imported by code in `src/`
-- put tooling in `dev`
-- put optional project capabilities in a named dependency group
+- if code in `src/` imports it, add it to base dependencies
+- if it is a dev tool, add it to `dev`
+- if it is an optional project capability, add it to a named group
 
 Examples:
 
@@ -173,6 +109,54 @@ uv add duckdb
 uv add --dev mypy
 uv add --group vis-static matplotlib seaborn
 uv add --group ml xgboost
+```
 
-### General advice
-Add these only when or if the project actually needs them! Best practice is to start with a clean reproducible baseline.
+If your project later needs typed settings loaded from environment variables or `.env`, add them when the project actually needs them:
+
+```bash
+uv add pydantic pydantic-settings
+```
+
+## Project layout
+
+```text
+src/                    reusable project code
+tests/                  automated tests
+notebooks/marimo/       exploratory notebook-style work as Python files
+data/                   raw, interim, processed, external
+models/                 model artefacts
+reports/figures/        generated figures
+```
+
+Use `src/` for logic you want to keep.
+
+Use `notebooks/marimo/` for exploration, iteration, and lightweight demos.
+
+## Lockfile and CI policy
+
+New projects are rendered without a `uv.lock`.
+
+The first `uv sync` creates it.
+
+Commit that file early and keep it in version control.
+
+Generated project CI assumes the lockfile is committed and uses `uv sync --frozen`.
+
+Template maintenance CI is different on purpose: it renders a sample project and checks that the onboarding path still works.
+
+## Maintainer note
+
+A few files exist both at the repo root and under `template/`.
+
+Keep them aligned on purpose:
+
+- `.vscode/settings.json`
+- `.vscode/extensions.json`
+- `.editorconfig`
+- `.gitattributes`
+
+A few others are similar but intentionally not identical because the template repo and generated repos have different jobs:
+
+- `.pre-commit-config.yaml`
+- `.gitignore`
+- GitHub Actions workflows

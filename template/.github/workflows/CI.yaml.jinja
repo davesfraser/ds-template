@@ -64,7 +64,61 @@ jobs:
         with:
           python-version: "{{ python_min_version }}"
 
-      # Install uv fast dependency manager and tool runner
+      # Install uv fast dependency manager and taname: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: {% raw %}ci-${{ github.workflow }}-${{ github.ref }}{% endraw %}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Linux quality checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "{{ python_min_version }}"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies from the committed lockfile
+        run: uv sync --frozen
+
+      - name: Check formatting
+        run: uv run ruff format --check .
+
+      - name: Lint
+        run: uv run ruff check src tests notebooks
+
+      - name: Check marimo notebooks
+        run: uv run marimo check notebooks/marimo
+
+      - name: Type check
+        run: uv run ty check
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Build package
+        run: uv buildool runner
       # Caching speeds up future runs by reusing wheels and downloads
       - name: Set up uv
         uses: astral-sh/setup-uv@v7

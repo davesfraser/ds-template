@@ -25,12 +25,9 @@ authors = [{ name = "{{ author_name }}" }]
 
 license = { file = "LICENSE" }
 
-# Keep base runtime light
-# Only include packages most projects will actually need
-dependencies = [
-    "pydantic",
-    "pydantic-settings",
-]
+# Keep the base runtime empty by default
+# Add runtime dependencies when code in src/ actually needs them
+dependencies = []
 
 [dependency-groups]
 # Dev-only tools: linting, typing, tests, coverage, hooks

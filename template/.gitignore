@@ -36,9 +36,6 @@ Thumbs.db
 .env
 .env.*
 
-# But do commit the example file — it's the reference for required variables
-!.env.example
-
 # Data files
 # Keep binary data (aka non-code) out of git repo as much as possible
 # Usually too large and/or not appropriate for version control

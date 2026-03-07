@@ -1,20 +1,14 @@
 {
-  // Uncomment ONE of these to pin VS Code to the project virtual environment.
-  // This prevents VS Code silently using a system or global Python instead.
-  //
-  // macOS / Linux:
-  // "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  //
-  // Windows:
-  // "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
-
-  // Keep Pylance as the main language server
-  // ty will still provide type-checking diagnostics
+  // Keep Pylance as the language server
+  // ty still provides type-checking diagnostics
   "python.languageServer": "Pylance",
   "ty.disableLanguageServices": true,
 
-  // Use the repo's virtual environment (commented out, problematic in Windows)
-  //"python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  // Uncomment one interpreter path if you want to pin VS Code to .venv
+  // macOS / Linux:
+  // "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  // Windows:
+  // "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
 
   // Use Ruff for formatting Python files
   "[python]": {
@@ -26,26 +20,18 @@
     }
   },
 
-  // Also format JSON, YAML, and Markdown on save if you like
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
 
-  // Make tests easier to run from inside VS Code
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestArgs": ["tests"],
 
-  // Keep terminal activation predictable on Windows
   "python.terminal.activateEnvironment": true,
 
-   // Pylance type checking in the editor
-  // "basic" enables useful type diagnostics without the noise of full strict mode
-  // This is editor-only feedback and complements the CLI type checker we run via `ty`
+  // Keep editor type checking useful without going full strict
   "python.analysis.typeCheckingMode": "basic",
 
-  // Analyse the whole workspace, not just currently open files
-  // This catches type issues across modules earlier and keeps editor feedback consistent
+  // Analyse the workspace, not just open files
   "python.analysis.diagnosticMode": "workspace"
-
-
 }
