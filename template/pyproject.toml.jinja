@@ -154,6 +154,10 @@ line-length = 100
 # Tell Ruff that src/ is the package root for import classification
 src = ["src"]
 
+# Pin Ruff's behaviour to the project's chosen Python version so formatting
+# is identical regardless of which Python interpreter is actually running.
+target-version = "py{{ python_min_version | replace('.', '') }}"
+
 # Ignore non-code artifact areas common in DS repos
 # This keeps Ruff focused on real source files
 extend-exclude = [

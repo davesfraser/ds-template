@@ -1,0 +1,29 @@
+[project]
+# This is the template repo's own development environment.
+# It is NOT the pyproject.toml that gets generated for users — that lives
+# at template/pyproject.toml.jinja.
+# This file exists so template developers can run `uv sync` and get all the
+# tools needed to work on and test the template itself.
+name = "ds-template"
+version = "0.1.0"
+requires-python = ">=3.13"
+
+[dependency-groups]
+dev = [
+    # For rendering and testing the template locally
+    "copier",
+    # For linting the template repo's own files
+    "ruff",
+    # For type checking the template repo's own files
+    "ty",
+    # For running the smoke test against a rendered project
+    "pytest",
+    # For running pre-commit hooks on the template repo
+    "pre-commit",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
