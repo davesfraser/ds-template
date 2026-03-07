@@ -94,6 +94,18 @@ uv sync --group ml
 uv sync --all-groups
 ```
 
+## Common commands
+
+| Task | Command |
+|------|---------|
+| Install all dependencies | `uv sync --all-groups` |
+| Format code | `uv run ruff format .` |
+| Lint | `uv run ruff check src tests notebooks` |
+| Type check | `uv run ty check` |
+| Run tests | `uv run pytest` |
+| Full quality check (matches CI) | `uv run ruff format --check . && uv run ruff check src tests notebooks && uv run ty check && uv run pytest` |
+| Open exploration notebook | `uv run marimo edit notebooks/marimo/01_exploration.py` |
+
 ## Next steps
 
 This template is a strong baseline, not a kitchen sink!

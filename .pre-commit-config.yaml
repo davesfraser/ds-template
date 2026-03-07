@@ -21,6 +21,18 @@ repos:
       # Catch accidentally committed merge markers
       - id: check-merge-conflict
 
+      # Catch large files (.gitignore should handle this but just in case..)
+      # Users often accidentally stage CSVs, parquets, model binaries etc.
+      # 500KB is a reasonable default; increase if your raw data is legitimately small
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+
+      # Catch accidentally committed private keys or credentials
+      - id: detect-private-key
+
+      # Prevent case-conflict issues on case-insensitive filesystems (macOS, Windows)
+      - id: check-case-conflict
+
   # Keep uv.lock in sync with pyproject.toml
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.10.8

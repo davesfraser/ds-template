@@ -1,4 +1,13 @@
 {
+  // Uncomment ONE of these to pin VS Code to the project virtual environment.
+  // This prevents VS Code silently using a system or global Python instead.
+  //
+  // macOS / Linux:
+  // "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  //
+  // Windows:
+  // "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+
   // Keep Pylance as the main language server
   // ty will still provide type-checking diagnostics
   "python.languageServer": "Pylance",

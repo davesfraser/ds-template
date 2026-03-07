@@ -206,6 +206,11 @@ ignore = [
 # Actually enforce annotation coverage
 ignore-fully-untyped = false
 
+[tool.ruff.lint.isort]
+# Tell ruff which package is this project's own code
+# Without this, ruff may classify it as third-party and sort imports incorrectly
+known-first-party = ["{{ package_name }}"]
+
 [tool.ruff.format]
 # Stay on stable formatter behavior
 preview = false

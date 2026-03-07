@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # Point directly at the repo .env file
     # This avoids confusing behaviour where running code from a different folder
     # causes the settings loader to miss the intended .env file
+    # Copy .env.example → .env and fill in your values
+    # .env is gitignored; .env.example is the committed reference
+
     model_config = SettingsConfigDict(
         env_file=project_root() / ".env",
         env_file_encoding="utf-8",

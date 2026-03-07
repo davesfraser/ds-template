@@ -19,6 +19,7 @@ venv/
 .coverage
 .coverage.*
 htmlcov/
+.ty/
 .mypy_cache/
 
 # Editor-specific folders
@@ -34,6 +35,9 @@ Thumbs.db
 # Often contain secrets or machine-specific config
 .env
 .env.*
+
+# But do commit the example file — it's the reference for required variables
+!.env.example
 
 # Data files
 # Keep binary data (aka non-code) out of git repo as much as possible
