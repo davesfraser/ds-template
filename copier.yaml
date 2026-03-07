@@ -8,13 +8,21 @@ project_name:
 
 project_slug:
   type: str
-  help: What is the repository and package distribution name? (kebab-case)
+  help: What is the repository and package distribution name? (kebab-case, e.g. my-ds-project)
   default: data-science-project
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9-]+$')) %}
+    project_slug must be lowercase kebab-case — letters, numbers, and hyphens only (e.g. my-ds-project)
+    {% endif %}
 
 package_name:
   type: str
-  help: What is the Python import package name? (snake_case)
+  help: What is the Python import package name? (snake_case, e.g. my_ds_project)
   default: data_science_project
+  validator: >-
+    {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$')) %}
+    package_name must be snake_case — letters, numbers, and underscores only (e.g. my_ds_project)
+    {% endif %}
 
 project_description:
   type: str
