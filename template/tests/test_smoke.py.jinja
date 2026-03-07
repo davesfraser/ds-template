@@ -21,7 +21,7 @@ def test_settings_load() -> None:
     # Check that the settings object loads without errors and that the project
     # name matches what was set during copier setup
     settings = get_settings()
-    assert settings.project_name == "{{ project_slug }}"
+    assert settings.project_name == "{{ package_name }}"
 
 
 def test_version_resolves() -> None:
@@ -43,8 +43,14 @@ def test_all_path_constants_are_paths_under_root() -> None:
     # Check every path constant defined in paths.py in one go
     root = project_root()
     constants = [
-        DATA_DIR, DATA_RAW, DATA_INTERIM, DATA_PROCESSED, DATA_EXTERNAL,
-        MODELS_DIR, FIGURES_DIR, NOTEBOOKS_DIR,
+        DATA_DIR,
+        DATA_RAW,
+        DATA_INTERIM,
+        DATA_PROCESSED,
+        DATA_EXTERNAL,
+        MODELS_DIR,
+        FIGURES_DIR,
+        NOTEBOOKS_DIR,
     ]
     for p in constants:
         # Each constant should be a Path object, not an accidental plain string
