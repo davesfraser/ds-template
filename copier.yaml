@@ -56,9 +56,8 @@ python_min_version:
 
 _exclude:
   - "uv.lock"
-  - "pyproject.toml"   # template repo dev environment, not for generated projects
+  - "/pyproject.toml"   # template repo dev environment, not for generated projects
   - ".github/workflows/template-smoke.yaml"
   - ".venv"
   - ".pytest_cache"
   - ".ruff_cache"
-  - "__pycache__"
