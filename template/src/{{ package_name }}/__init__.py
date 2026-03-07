@@ -6,7 +6,7 @@ from .config import Settings, get_settings
 # Re-export the settings type and loader so users have one clean import path
 # Export get_settings rather than a pre-built settings object
 # This keeps package import simple and avoids hidden side effects during import
-__all__ = ["Settings", "get_settings", "__version__"]
+__all__ = ["Settings", "__version__", "get_settings"]
 
 # Single source of truth for the package version
 # Matches the version in pyproject.toml
