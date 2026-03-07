@@ -6,9 +6,13 @@ A modern Python data science project template for practitioners who want to star
 
 This template is for code-first data science work where exploratory analysis is expected to mature into maintainable project code.
 
+It assumes code runs from a checked-out project repository.
+
+It is not trying to be a general-purpose library template or a package designed to be installed and used outside the repo.
+
 It gives you:
 
-- a real `src/` package layout
+- - a clean `src/` layout for reusable project code inside a checked-out repo
 - fast modern tooling with `uv`, `ruff`, `ty`, and `pytest`
 - Git-friendly notebook-style work with marimo
 - sensible VS Code defaults
@@ -67,16 +71,17 @@ uv run pytest
 
 ## Dependency groups
 
-`uv sync` installs:
+By default, `uv sync` installs:
 
-- base project dependencies
+- base dependencies
 - `dev`
 - `notebook`
 - `data`
 - `stats`
 
-Optional groups are available for project-specific needs:
+Optional groups are available when needed:
 
+- `data-pandas`
 - `validation`
 - `vis-static`
 - `vis-interactive`

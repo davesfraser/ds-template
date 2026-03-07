@@ -1,70 +1,7 @@
 # This workflow is the automated quality gate for the repo
 # It runs the same checks developers should run locally
-# Install from the lockfile for repeatable builds
-# Formatting check
-# Lint check
-# Type checking
-# Tests
-#
-# This version can run on both Linux and Windows
 
 name: CI
-
-on:
-  # Run when code is pushed to main for example after a PR merge
-  push:
-    branches: ["main"]
-
-  # Run on every pull request so failures show up before merge
-  pull_request:
-
-  # Allow manual runs from the Actions UI
-  # Handy for the first run so required checks appear for branch rules
-  workflow_dispatch:
-
-# Keep permissions minimal this workflow only needs to read the code
-permissions:
-  contents: read
-
-# Cancel older runs when new commits arrive on the same branch or PR
-# Saves minutes and keeps results aligned with the latest commit
-concurrency:
-  group: {% raw %}ci-${{ github.workflow }}-${{ github.ref }}{% endraw %}
-  cancel-in-progress: true
-
-jobs:
-  quality:
-    # Job label shown in the Checks UI
-    # Includes the operating system so each runner is easy to identify
-    name: {% raw %}CI on ${{ matrix.os }}{% endraw %}
-
-    # Run the same job on multiple operating systems
-    # This helps catch cross platform issues such as paths shell behavior or package quirks
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest] # Probably enough to test code in linux
-        # os: [ubuntu-latest, windows-latest] # Swap to this if cross-platform is needed
-
-    # Choose the runner image from the matrix above
-    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
-
-    # Prevent a stuck job from running forever
-    timeout-minutes: 20
-
-    steps:
-      # Pull repository code into the runner
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Install the Python version the project targets
-      # Use an explicit version to avoid surprise upgrades
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "{{ python_min_version }}"
-
-      # Install uv fast dependency manager and taname: CI
 
 on:
   push:
@@ -99,7 +36,7 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install dependencies from the committed lockfile
+      - name: Install dependencies from committed lockfile
         run: uv sync --frozen
 
       - name: Check formatting
@@ -115,45 +52,7 @@ jobs:
         run: uv run ty check
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run pytest -q
 
-      - name: Build package
-        run: uv buildool runner
-      # Caching speeds up future runs by reusing wheels and downloads
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      # Install dependencies exactly as pinned in the uv lockfile
-      # --frozen fails if the lockfile is out of date and prevents CI from updating it
-      # --all-groups installs every optional dependency group so optional stacks do not bit rot
-      # For faster CI later remove --all-groups to install only base plus dev
-      - name: Install dependencies
-        run: uv sync
-
-      # Check formatting without rewriting files
-      # Fails if formatting would change
-      - name: Check formatting (ruff)
-        run: uv run ruff format --check .
-
-      # Run lint rules to catch bugs and enforce conventions
-      - name: Lint (ruff)
-        run: uv run ruff check src tests notebooks
-
-      # Check marimo notebooks for formatting issues
-      - name: Check marimo notebooks
-        run: uv run marimo check notebooks/marimo
-
-      # Run type checking to catch type errors before runtime
-      - name: Type check (ty)
-        run: uv run ty check
-
-      # Run tests to validate behavior
-      - name: Run tests (pytest)
-        run: uv run pytest
-
-      # Build the generated project as both a wheel and source distribution
-      # This catches packaging/config issues that editable installs and tests may miss
       - name: Build package
         run: uv build

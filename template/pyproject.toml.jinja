@@ -1,7 +1,7 @@
 [build-system]
-# How the project gets built into an installable package
-# hatchling is a modern, lightweight build backend that is a good default option
-# expects that uv will be utilised for environment management
+# Build backend for the project
+# Keeping a build step in CI is useful as a validation check even though this
+# template is primarily designed for checked-out repo usage
 
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -48,13 +48,16 @@ notebook = [
 ]
 
 # Core dataframe/array stack
-# This gives you pandas + polars + Arrow interoperability without forcing ML deps
+# This gives you polars + Arrow interoperability without forcing ML deps
 data = [
     "numpy",
-    "pandas",
-    "pandas-stubs",
     "polars",
     "pyarrow",
+]
+
+data-pandas = [
+    "pandas",
+    "pandas-stubs",
 ]
 
 # Classical statistics and hypothesis testing
@@ -96,8 +99,7 @@ ml = [
 default-groups = ["dev", "notebook", "data", "stats"]
 
 [tool.hatch.build.targets.wheel]
-# Build the installable package from src/ using a proper src layout
-# This avoids "works on my machine because repo root is importable" problems
+# Keep src imports honest and let CI catch packaging drift
 packages = ["src/{{ package_name }}"]
 
 [tool.pytest.ini_options]

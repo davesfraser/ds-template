@@ -4,10 +4,9 @@ from pathlib import Path
 
 
 def project_root() -> Path:
-    """Return the absolute path to the repo root.
+    """Return the absolute path to the checked-out project root.
 
-    Works regardless of where you run your code from, which matters when
-    scripts, notebooks, and scheduled jobs all have different working directories.
+    This template assumes code runs from a checked-out project repository.
     """
     # This file lives at src/<package>/paths.py, so three levels up is the root.
     return Path(__file__).resolve().parents[2]

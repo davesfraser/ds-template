@@ -5,11 +5,15 @@ project_name:
   type: str
   help: What is the title of your project? (Human readable)
   default: Data science project
+  validator: >-
+    {% if not (project_name | regex_search('^[A-Za-z0-9][A-Za-z0-9 _-]*$')) %}
+    project_name should use letters, numbers, spaces, hyphens, or underscores only
+    {% endif %}
 
 project_slug:
   type: str
-  help: What is the repository and package distribution name? (kebab-case, e.g. my-ds-project)
-  default: data-science-project
+  help: Repository name used for the project distribution name
+  default: "{% from pathjoin('includes', 'slugify.jinja') import kebab %}{{ kebab(project_name) }}"
   validator: >-
     {% if not (project_slug | regex_search('^[a-z][a-z0-9-]+$')) %}
     project_slug must be lowercase kebab-case — letters, numbers, and hyphens only (e.g. my-ds-project)
@@ -17,8 +21,8 @@ project_slug:
 
 package_name:
   type: str
-  help: What is the Python import package name? (snake_case, e.g. my_ds_project)
-  default: data_science_project
+  help: Python import package name
+  default: "{% from pathjoin('includes', 'slugify.jinja') import snake %}{{ snake(project_slug) }}"
   validator: >-
     {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$')) %}
     package_name must be snake_case — letters, numbers, and underscores only (e.g. my_ds_project)
