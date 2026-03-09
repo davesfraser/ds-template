@@ -25,22 +25,27 @@ authors = [{ name = "{{ author_name }}" }]
 
 license = { file = "LICENSE" }
 
-# Keep the base runtime empty by default
-# Add runtime dependencies when code in src/ actually needs them
-dependencies = []
+# settings.py uses pydantic-settings for typed, auditable runtime configuration
+# This handles .env loading, environment variable overrides, and type coercion
+dependencies = ["pydantic-settings"]
 
 [dependency-groups]
 # Dev-only tools: linting, typing, tests, coverage, hooks
 # uv treats the "dev" group specially and syncs it by default
 dev = [
     "ruff",
-    "ty",
+    "mypy",
+    # ty is Astral's next-generation type checker — faster than mypy but pre-1.0
+    # as of early 2026, meaning it can produce false positives on complex library
+    # types (polars, numpy, scipy) that mypy handles reliably
+    # To try it: uv add --dev ty, then run: uv run ty check
+    # Switch it in here when ty reaches stable and you have verified it handles
+    # your codebase cleanly — track releases at https://github.com/astral-sh/ty
+    # "ty",
     "pytest",
     "pytest-cov",
-    "hypothesis",
     "pre-commit",
 ]
-
 # marimo is the notebook/app workflow for this template,
 # let's keep exploratory work Git-friendly and Python-native
 notebook = [
@@ -221,17 +226,9 @@ preview = false
 # Also format Python code in docstrings
 docstring-code-format = true
 
-# ty is Astral's type checker, built to pair with ruff
-# It's fast and works well for most DS code, but it's still pre-1.0 as of
-# early 2026, so you may hit occasional false positives or missing inference
-# on more complex types
-#
-# To suppress a specific false positive on one line:
-#   result = some_call()  # ty: ignore[possibly-unbound]
-#
-# If you need mypy (e.g. for mypy plugins or django-stubs), add it to the
-# dev group and run both — they coexist fine and cover different gaps
-# Track what ty has fixed: https://github.com/astral-sh/ty/releases
+# type checking
+
+# ty (for when it comes stable)
 
 [tool.ty.src]
 # Type-check package code and tests
@@ -240,3 +237,41 @@ include = ["src", "tests"]
 [tool.ty.terminal]
 # Cleaner terminal output
 output-format = "concise"
+
+#mypy
+
+# mypy is the primary type checker for this project
+# It is run in CI and can be run locally with: uv run mypy src tests
+#
+# strict mode is intentionally off — it requires annotations everywhere
+# including on third-party code, which is too aggressive for analytical projects
+# The settings below give you reliable, trustworthy errors without that overhead
+[tool.mypy]
+python_version = "{{ python_min_version }}"
+
+# Warn when a function returns Any without explicitly annotating it as such
+warn_return_any = true
+
+# Warn about mypy config options that have no effect
+warn_unused_configs = true
+
+# Warn when code is unreachable due to type narrowing
+warn_unreachable = true
+
+# Don't crash on missing stubs for third-party libraries
+# Many DS libraries have partial or missing stubs — this makes mypy usable
+# without requiring stub packages for every dependency
+ignore_missing_imports = true
+
+# Check the bodies of functions that have no annotations
+# Without this, unannotated functions are silently skipped
+check_untyped_defs = true
+
+# Disallow calling untyped functions from typed ones
+disallow_untyped_calls = false
+
+# Per-module overrides for libraries with known stub gaps
+[[tool.mypy.overrides]]
+# statsmodels has limited stubs — silence the noise until upstream improves
+module = ["statsmodels.*"]
+ignore_errors = true

@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from {{ package_name }}.settings import settings
 from {{ package_name }} import __version__
 from {{ package_name }}.paths import (
     DATA_DIR,
@@ -44,3 +44,10 @@ def test_all_path_constants_are_paths_under_root() -> None:
             f"{p.name} is not under the project root — "
             "paths.py and the folder layout may be out of sync"
         )
+
+
+def test_settings_loads() -> None:
+    # Verify settings initialises without errors and returns typed values
+    assert isinstance(settings.alpha, float)
+    assert isinstance(settings.min_sample_size, int)
+    assert settings.environment in {"development", "production"}

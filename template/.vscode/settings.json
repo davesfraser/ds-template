@@ -1,16 +1,19 @@
 {
-  // Keep Pylance as the language server
-  // ty still provides type-checking diagnostics
+  // Pylance is the language server — it handles autocomplete, hover docs,
+  // go-to-definition and import resolution
+  // It is NOT doing type checking here — mypy owns that job
   "python.languageServer": "Pylance",
-  "ty.disableLanguageServices": true,
 
-  // Uncomment one interpreter path if you want to pin VS Code to .venv
-  // macOS / Linux:
-  // "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  // Windows:
-  // "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  // Turning this off stops Pylance producing its own type squiggles
+  // Without this, you get errors from both Pylance and mypy simultaneously
+  // and there is no way to tell which tool flagged which error
+  "python.analysis.typeCheckingMode": "off",
 
-  // Use Ruff for formatting Python files
+  // Analyse the full workspace so autocomplete works across all project files,
+  // not just whichever file is currently open
+  "python.analysis.diagnosticMode": "workspace",
+
+  // Ruff handles all Python formatting and import sorting on save
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
@@ -23,15 +26,11 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
 
+  // Use pytest, not unittest
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestArgs": ["tests"],
 
-  "python.terminal.activateEnvironment": true,
-
-  // Keep editor type checking useful without going full strict
-  "python.analysis.typeCheckingMode": "basic",
-
-  // Analyse the workspace, not just open files
-  "python.analysis.diagnosticMode": "workspace"
+  // Activate the project virtual environment automatically in the terminal
+  "python.terminal.activateEnvironment": true
 }

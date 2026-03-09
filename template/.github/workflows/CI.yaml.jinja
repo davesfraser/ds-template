@@ -49,7 +49,7 @@ jobs:
         run: uv run marimo check notebooks/marimo
 
       - name: Type check
-        run: uv run ty check
+        run: uv run mypy src tests
 
       - name: Run tests
         run: uv run pytest -q
