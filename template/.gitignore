@@ -59,3 +59,6 @@ reports/figures/*
 # Keep these folders present in the template
 !models/.gitkeep
 !reports/figures/.gitkeep
+
+# Local template render target — throwaway, never commit
+.rendered/

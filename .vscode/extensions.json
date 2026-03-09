@@ -3,7 +3,7 @@
     "ms-python.python",
     "ms-python.vscode-pylance",
     "charliermarsh.ruff",
-    "astral-sh.ty",
-    "marimo-team.vscode-marimo"
+    "matangover.mypy",
+    "skellock.just"
   ]
 }

@@ -165,3 +165,54 @@ A few others are similar but intentionally not identical because the template re
 - `.pre-commit-config.yaml`
 - `.gitignore`
 - GitHub Actions workflows
+
+## Template development workflow
+
+[just](https://just.systems) is used as the local task runner.
+Install it with:
+```bash
+# Windows
+winget install Casey.Just
+
+# macOS
+brew install just
+
+# Linux
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+```
+
+### Commands
+
+Render the template and run all checks — mirrors exactly what CI does:
+```bash
+just check
+```
+
+Render the template only, without running checks:
+```bash
+just render
+```
+
+Inspect the rendered output in VS Code:
+```bash
+just render
+code .rendered
+```
+
+Remove the rendered output directory:
+```bash
+just clean
+```
+
+### Why just check instead of pushing to CI
+
+`.jinja` template files cannot be linted or formatted directly — ruff and mypy
+do not understand Jinja syntax. All code quality checks run against the rendered
+output in `.rendered/`, not against the source template files.
+
+`just check` renders the template locally and runs the full check suite against
+the output. This gives you the same feedback as CI in seconds rather than waiting
+for a push.
+
+Pre-commit hooks handle fast file-level hygiene only — trailing whitespace, TOML
+and YAML validity, large file detection. They do not replace `just check`.

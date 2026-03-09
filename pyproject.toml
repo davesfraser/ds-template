@@ -15,7 +15,7 @@ dev = [
     # For linting the template repo's own files
     "ruff",
     # For type checking the template repo's own files
-    "ty",
+    "mypy",
     # For running the smoke test against a rendered project
     "pytest",
     # For running pre-commit hooks on the template repo
