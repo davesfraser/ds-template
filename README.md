@@ -65,7 +65,7 @@ Run the local checks once so you know the project is healthy before making chang
 ```bash
 uv run ruff format --check .
 uv run ruff check src tests notebooks
-uv run ty check
+uv run mypy src tests
 uv run pytest
 ```
 

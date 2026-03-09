@@ -57,7 +57,7 @@ jobs:
 
       - name: Type check
         working-directory: rendered
-        run: uv run ty check
+        run: uv run mypy src tests
 
       - name: Run tests
         working-directory: rendered
