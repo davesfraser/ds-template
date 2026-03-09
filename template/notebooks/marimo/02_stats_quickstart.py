@@ -147,7 +147,7 @@ def _(df_contingency, mo, pl, stats):
         "group"
     )
 
-    chi2, p, dof, expected = stats.chi2_contingency(
+    chi2, p, dof, _ = stats.chi2_contingency(
         contingency_matrix.select(pl.exclude("group")).to_numpy()
     )
 
