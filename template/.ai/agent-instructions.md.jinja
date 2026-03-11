@@ -1,0 +1,96 @@
+<!-- This file is the single source of truth for AI assistant instructions -->
+<!-- It is copied automatically to AGENTS.md, CLAUDE.md, AGENT.md, and    -->
+<!-- .github/copilot-instructions.md when the project is created           -->
+<!-- Edit this file only — changes here propagate to all AI assistant      -->
+<!-- instruction files when the project is next updated via copier         -->
+
+# {{ project_name }}
+
+{{ project_description }}
+
+This repository contains a reproducible data science analysis project.
+AI coding assistants must follow the rules in this document when generating code.
+
+---
+
+# Core rules
+
+RULE: All reusable code lives in `src/{{ package_name }}`.
+RULE: Notebooks are for exploration only — do not implement reusable logic inside notebooks.
+RULE: Notebooks must remain lightweight and primarily call functions from `src/`.
+RULE: All filesystem paths must be imported from `{{ package_name }}.paths`.
+RULE: Never construct filesystem paths manually using strings.
+RULE: All configuration values must be imported from `{{ package_name }}.settings`.
+RULE: All dataframe operations must use Polars.
+EXCEPTION: Pandas may only be used when required by an external library.
+RULE: When an external library requires pandas, convert at the call site only.
+RULE: Label every pandas conversion with a comment identifying which library requires it.
+RULE: Functions in `src/` must include type annotations on all arguments and return values.
+RULE: All Python commands must be executed via `uv run`.
+RULE: Scripts must produce deterministic outputs when given the same inputs.
+RULE: Scripts orchestrate pipelines — they call `src/` functions, they do not implement logic directly.
+
+---
+
+# Project stack
+
+- Python {{ python_min_version }}+
+- polars for dataframe operations
+- marimo for notebooks
+- uv for environment and dependency management
+- ruff for linting and formatting
+- pytest for testing
+- mypy for static type checking
+
+---
+
+# Project structure
+```text
+src/{{ package_name }}/     reusable project code
+tests/                      pytest tests
+scripts/                    reproducible analysis entrypoints
+notebooks/marimo/           exploratory notebooks
+data/raw/                   source data — read only, never modified
+data/interim/               intermediate data
+data/processed/             final datasets
+models/                     serialised model artefacts
+reports/figures/            generated plots
+.ai/                        AI assistant guidance files
+```
+
+---
+
+# Coding rules
+
+RULE: Analysis logic must be implemented as reusable functions in `src/`.
+RULE: Notebooks must call functions from `src/`.
+RULE: Do not duplicate logic across notebooks.
+RULE: Scripts orchestrate analysis pipelines — logic lives in `src/`, not in scripts.
+RULE: Functions must be deterministic and avoid hidden global state.
+RULE: New functionality in `src/` must include pytest tests.
+
+---
+
+# Commands
+
+All commands must be executed using `uv run`:
+```bash
+uv run pytest              # run tests
+uv run mypy src tests      # type check
+uv run ruff check .        # lint
+uv run ruff format .       # format
+```
+
+---
+
+# Data science standards
+
+All analytical code must follow the standards defined in:
+
+`.ai/ds-rules.md`
+
+Load it before starting any analytical task:
+- **GitHub Copilot:** type `/ds-rules` in Copilot Chat
+- **Gemini Code Assist:** type `@.ai/ds-rules.md` in the chat
+- **Cursor / Windsurf:** drag `.ai/ds-rules.md` into the chat window
+- **Claude Code:** type `@.ai/ds-rules.md` in the chat

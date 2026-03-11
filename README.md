@@ -1,6 +1,6 @@
 # 2026 Python data science template
 
-A modern Python data science project template for practitioners who want to start quickly without ending up with a messy repo.
+A modern Python data science project template for practitioners who want to start quickly without ending up with a messy repo. It encourages reproducible analytics and ships with structured best-practice guidance that AI coding assistants load automatically — so generated code follows your project standards from day one.
 
 ## What this template is
 
@@ -12,12 +12,13 @@ It is not trying to be a general-purpose library template or a package designed 
 
 It gives you:
 
-- - a clean `src/` layout for reusable project code inside a checked-out repo
-- fast modern tooling with `uv`, `ruff`, `ty`, and `pytest`
+- a clean `src/` layout for reusable project code inside a checked-out repo
+- fast modern tooling with `uv`, `ruff`, `mypy`, and `pytest`
 - Git-friendly notebook-style work with marimo
 - sensible VS Code defaults
 - a lightweight CI baseline
 - dependency groups that are easy to extend
+- built-in AI coding assistant integration with project conventions and data science best-practice standards that load automatically in Copilot, Cursor, Gemini Code Assist, Claude Code, and others
 
 It is **not** aimed at notebook-only or Jupyter-heavy workflows where almost everything lives in `.ipynb` files.
 
@@ -36,12 +37,72 @@ It may not be a good fit for:
 - heavyweight MLOps platforms
 - notebook-only exploratory work with no intention of moving logic into `src/`
 
+## AI coding assistant integration
+
+Generated projects ship with structured guidance that AI coding assistants pick up automatically. This means assistants like Copilot, Cursor, Gemini Code Assist, and Claude Code generate code that follows your project's conventions without you having to explain them on every prompt.
+
+### What loads automatically
+
+When you open a generated project, your AI assistant reads `AGENTS.md` from the project root without any configuration. This file contains project-specific rules: where code lives, how paths and settings are imported, polars-first conventions, and the commands to run. The following assistants pick it up automatically:
+
+- GitHub Copilot
+- Cursor
+- Gemini Code Assist (as `AGENT.md`)
+- Claude Code (as `CLAUDE.md`)
+- OpenAI Codex, Google Jules, Windsurf, Zed, Warp, Amp, and others
+
+All four files (`AGENTS.md`, `AGENT.md`, `CLAUDE.md`, `.github/copilot-instructions.md`) are generated from a single source at `.ai/agent-instructions.md` — edit that file to update conventions across all assistants at once.
+
+### Loading data science best-practice standards
+
+`.ai/ds-rules.md` contains a comprehensive set of analytical standards covering experimental design, hypothesis testing, EDA, data leakage prevention, model evaluation, and visualisation. Load it at the start of any analytical task:
+
+| Assistant | How to load |
+|---|---|
+| GitHub Copilot in VS Code | Type `/ds-rules` in Copilot Chat |
+| Gemini Code Assist | Type `@.ai/ds-rules.md` in the chat |
+| Claude Code | Type `@.ai/ds-rules.md` in the chat |
+| Cursor | Drag `.ai/ds-rules.md` into the chat window |
+| Windsurf | Drag `.ai/ds-rules.md` into the chat window |
+
+### Example usage
+
+Starting an EDA task in Copilot Chat:
+```
+/ds-rules
+
+I have a dataset at data/raw/survey_2024.parquet with columns: age, income,
+region, churn. Walk me through an EDA for a churn prediction project.
+```
+
+Starting a modelling task in Cursor:
+```
+[drag .ai/ds-rules.md into chat]
+
+Build a baseline churn classification model using the processed dataset
+at data/processed/features.parquet. Follow the structured analysis workflow
+checklist.
+```
+
+Starting any task in Claude Code:
+```
+@.ai/ds-rules.md @AGENTS.md
+
+Write a function in src/ to load and validate the raw survey data,
+checking schema, nulls, and class balance.
+```
+
+### Updating AI instructions for your project
+
+As your project evolves, update `.ai/agent-instructions.md` to reflect any project-specific conventions. This is the single source of truth — do not edit `AGENTS.md`, `CLAUDE.md`, or `AGENT.md` directly as they are generated files.
+
+---
+
 ## Create a new project from this template
 
 Use Copier, not GitHub's "Use this template" button.
 
 Copier handles project naming, package naming, and file rendering properly.
-
 ```bash
 uvx copier copy https://github.com/YOUR-ORG/YOUR-REPO.git my-new-project
 cd my-new-project
@@ -50,7 +111,6 @@ cd my-new-project
 ## First 5 minutes in a new project
 
 Set up the environment, install Git hooks, create the lockfile, and make the first commit.
-
 ```bash
 uv sync
 uv run pre-commit install
@@ -61,7 +121,6 @@ code .
 ```
 
 Run the local checks once so you know the project is healthy before making changes.
-
 ```bash
 uv run ruff format --check .
 uv run ruff check src tests notebooks
@@ -88,7 +147,6 @@ Optional groups are available when needed:
 - `ml`
 
 Examples:
-
 ```bash
 uv sync
 uv sync --group validation
@@ -108,7 +166,6 @@ Use these rules:
 - if it is an optional project capability, add it to a named group
 
 Examples:
-
 ```bash
 uv add duckdb
 uv add --dev mypy
@@ -116,37 +173,32 @@ uv add --group vis-static matplotlib seaborn
 uv add --group ml xgboost
 ```
 
-If your project later needs typed settings loaded from environment variables or `.env`, add them when the project actually needs them:
-
-```bash
-uv add pydantic pydantic-settings
-```
-
 ## Updating an existing project from the template
 
-If the template has improved since you created your project, pull the
-changes in with:
+If the template has improved since you created your project, pull the changes in with:
 ```bash
 uvx copier update
 ```
 
-Copier will show you a diff of what would change and let you accept or
-reject each update. Commit the result as a normal change to your project.
+Copier will show you a diff of what would change and let you accept or reject each update. Commit the result as a normal change to your project.
 
 ## Project layout
-
 ```text
 src/                    reusable project code
 tests/                  automated tests
+scripts/                reproducible analysis entrypoints
 notebooks/marimo/       exploratory notebook-style work as Python files
 data/                   raw, interim, processed, external
 models/                 model artefacts
 reports/figures/        generated figures
+.ai/                    AI assistant guidance files
 ```
 
 Use `src/` for logic you want to keep.
 
 Use `notebooks/marimo/` for exploration, iteration, and lightweight demos.
+
+Use `scripts/` for end-to-end pipeline entrypoints that orchestrate `src/` functions.
 
 ## Lockfile and CI policy
 
@@ -218,3 +270,7 @@ repo and generated repos have different jobs:
 - `.pre-commit-config.yaml`
 - `.gitignore`
 - GitHub Actions workflows
+
+The AI assistant instruction files (`AGENTS.md`, `CLAUDE.md`, `AGENT.md`,
+`.github/copilot-instructions.md`) are generated from
+`template/.ai/agent-instructions.md.jinja` — do not edit them directly.

@@ -71,6 +71,9 @@ _exclude:
   - ".venv"
   - ".pytest_cache"
   - ".ruff_cache"
+  - "AGENTS.md"
+  - "CLAUDE.md"
+  - "AGENT.md"
 
 _message_after_copy: |
   Next steps
@@ -81,3 +84,24 @@ _message_after_copy: |
     git add .
     git add uv.lock
     git commit -m "Initial project from template"
+
+_tasks:
+  # Copy the single agent instructions source to all filenames that
+  # different AI coding assistants expect at the project root
+  # To add support for a new assistant, add its target path to this list
+  - command: >
+      python -c "
+      import shutil
+      from pathlib import Path
+      src = Path('.ai/agent-instructions.md')
+      targets = [
+          Path('AGENTS.md'),
+          Path('CLAUDE.md'),
+          Path('AGENT.md'),
+          Path('.github/copilot-instructions.md'),
+      ]
+      for target in targets:
+          target.parent.mkdir(parents=True, exist_ok=True)
+          shutil.copy(src, target)
+      print('AI assistant instruction files created from .ai/agent-instructions.md')
+      "

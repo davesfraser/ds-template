@@ -1,0 +1,202 @@
+# data-science-best-practice — {{ project_name }}
+
+Reference these standards when writing analytical code, notebooks, or
+reports for this project. Read the relevant sections for the task at hand.
+
+---
+
+# ai-assistant-quick-summary
+
+Key analytical rules for AI coding assistants:
+
+- EDA before modelling
+- Train/test split before preprocessing
+- Always report effect sizes and confidence intervals
+- Establish baseline models before complex models
+- Never evaluate on the training set
+- Raw data is read-only
+- Functions in `src/` are typed, tested, documented, and deterministic
+- Notebooks are exploratory and must call `src/` functions
+- Always execute Python commands using `uv run`
+
+---
+
+# code-structure-and-reusability
+
+RULE: One function should have one clear purpose.
+RULE: Split functions that need extensive comments to explain them.
+RULE: Functions in `src/` must be typed, tested, documented, and reusable.
+RULE: Notebooks may call `src/` functions but should not reimplement logic.
+RULE: No magic numbers — use named constants in `settings.py` or module-level constants with comments.
+RULE: Prefer functional style for data transformations; functions should be pure where possible.
+RULE: Docstrings explain why, not what.
+RULE: Reference the source for any formula or method (e.g., "Cohen's d, Cohen 1988").
+RULE: Comment on analytical choices that could have gone another way.
+
+---
+
+# version-control-discipline
+
+RULE: Commit messages explain why, not just what.
+RULE: Never commit data, model binaries, or credentials.
+RULE: Small focused commits — one analytical change per commit.
+RULE: Commits must leave the project in a passing CI state.
+
+---
+
+# reproducibility
+
+RULE: Fix random seeds using `numpy.random.default_rng(seed)`; never `random.seed()` or `np.random.seed()`.
+RULE: Pin the seed in `settings.py`: `rng = np.random.default_rng(settings.random_seed)`.
+RULE: Set `random_state` in all stochastic models and scikit-learn components.
+RULE: Every analysis producing outputs must be runnable end-to-end from raw data.
+RULE: Document data version alongside every result.
+RULE: Fix the train/test split index and store it.
+RULE: Persist expensive intermediate computations to `data/interim/` to avoid recomputation.
+
+---
+
+# experimental-design
+
+RULE: State research questions precisely before touching the data.
+RULE: Distinguish exploratory from confirmatory work.
+RULE: Avoid HARKing.
+RULE: Pre-specify primary metrics before analysis.
+RULE: Pre-specify minimum effect sizes for practical relevance.
+RULE: Identify and document confounding variables before analysis.
+RULE: For A/B tests: define minimum detectable effect, run a power analysis, and avoid peeking at results.
+RULE: For observational studies: explicitly state that correlation is not causation.
+RULE: Document researcher degrees of freedom.
+
+---
+
+# hypothesis-testing
+
+RULE: State null and alternative hypotheses in plain language before testing.
+RULE: Choose the test before seeing the data.
+RULE: Use Welch's t-test by default for comparing two means.
+RULE: Evaluate statistical significance and practical significance independently.
+RULE: Report effect sizes and confidence intervals for all tests.
+RULE: Apply multiple comparisons correction when running multiple tests.
+RULE: Never interpret non-significant results as evidence of no effect.
+RULE: Bootstrap confidence intervals often outperform parametric tests for small or non-normal samples.
+GUIDELINE: Treat p-values as guides, not bright lines.
+GUIDELINE: Consider Bayesian methods when prior knowledge exists.
+
+---
+
+# data-integrity
+
+RULE: Raw data is read-only.
+RULE: Never write outputs to `data/raw/`.
+RULE: Validate schemas at ingestion boundaries (columns, types, nullability).
+RULE: Null handling must be explicit.
+RULE: State data types explicitly on load.
+RULE: Document every data transformation from raw to processed.
+
+---
+
+# exploratory-data-analysis
+
+RULE: Conduct EDA before modelling or confirmatory analysis.
+RULE: Treat EDA as exploratory; validate findings on held-out or fresh data.
+RULE: Examine variable distributions, central tendency, spread, missingness, outliers, and cardinality.
+RULE: Examine pairwise correlations, conditional distributions, and whether relationships are linear, monotonic, or neither before assuming any functional form.
+RULE: Check class balance before classification and decide handling strategy.
+RULE: Detect duplicates and near-duplicates.
+RULE: Examine missingness relationships.
+RULE: Document EDA findings explicitly in `reports/`.
+RULE: Distinguish data errors from genuine extreme outliers.
+RULE: Exploratory visualisations are for analysts; explanatory visualisations are separate.
+
+---
+
+# data-leakage-prevention
+
+RULE: Split train/test before preprocessing.
+RULE: Fit transformers on train only; transform both train and test.
+RULE: Use scikit-learn `Pipeline` to encapsulate preprocessing.
+RULE: For time-series, use temporal splits.
+RULE: Prevent group leakage (split by group if needed).
+RULE: Prefer `class_weight='balanced'` for imbalanced classes; avoid SMOTE unless assumptions are understood.
+RULE: Feature selection must occur inside cross-validation.
+RULE: Hyperparameter tuning must avoid using the test set.
+
+---
+
+# model-evaluation
+
+RULE: Never evaluate on the training set.
+RULE: Reserve a final test set untouched until all development is complete.
+RULE: Use cross-validation for model selection and tuning.
+RULE: Use multiple metrics appropriate to the problem.
+RULE: Report precision, recall, F1, and AUC for classification.
+RULE: Use log loss for probability outputs and calibrate probabilities.
+RULE: Establish a simple baseline before complex models.
+RULE: Use SHAP values to explain predictions — prefer shap.Explainer over model-specific explainers.
+RULE: Report MAE and RMSE for regression.
+RULE: Evaluate performance on meaningful subgroups.
+
+---
+
+# visualisation-and-charts
+
+RULE: Match chart type to the question.
+RULE: Avoid pie charts, 3D charts, and dual-axis charts.
+RULE: Y-axis zero baseline for bar charts; deliberate for line charts.
+RULE: Area must be proportional to value.
+RULE: Use sequential palettes for continuous data, diverging for centered data, qualitative for categories.
+RULE: Limit qualitative palettes to 5–7 colours.
+RULE: Avoid red/green-only encoding; check colour blindness.
+RULE: Use `viridis` as the default sequential palette — it is perceptually uniform and colour-blindness safe.
+RULE: Every explanatory figure must have a descriptive title, labelled axes with units, data source, n count, and annotations.
+RULE: Show effect sizes and confidence intervals on figures.
+RULE: Use tables for exact values, charts for patterns.
+RULE: Right-align numeric columns; align decimal points; round meaningfully; include units in headers.
+RULE: For model comparison tables, include baseline row and make it visually distinct.
+
+---
+
+# notebook-hygiene
+
+RULE: One notebook, one question.
+RULE: No business logic in notebook cells — reusable logic belongs in `src/`.
+RULE: Keep data loading cells isolated at the top.
+RULE: Cells should be stateless where possible.
+RULE: Exploratory notebooks can be rough; deliverable notebooks must be clean.
+
+---
+
+# testing
+
+RULE: Test analytical functions in `src/`, not notebooks.
+RULE: Test edge cases analytically meaningful (empty DataFrames, single-row inputs, all-null columns).
+RULE: Include regression tests for known outputs.
+RULE: Test data schemas (columns, types, nullability).
+RULE: Property-based tests using `hypothesis` are appropriate for functions with mathematical invariants.
+
+---
+
+# configuration-driven-experiments
+
+RULE: Parameterise experiments via configuration, not hard-coded constants.
+RULE: All analysis parameters should live in `settings.py` or a config file.
+
+---
+
+# structured-analysis-workflow-checklist
+
+RULE: Follow this checklist before generating or running any modelling code:
+
+1. Conduct full EDA and document findings.
+2. Confirm research question and primary metric.
+3. Pre-specify minimum effect size.
+4. Split train/test (and validation) before any preprocessing.
+5. Apply transformations and feature engineering on train only; transform test accordingly.
+6. Establish baseline models and metrics.
+7. Check for data leakage and confirm all assumptions.
+8. Select modelling approach and pre-specify hyperparameter tuning plan.
+9. Evaluate models on validation and test sets using multiple metrics.
+10. Calibrate probabilities and compute effect sizes and confidence intervals.
+11. Document results in `reports/`, including visualisations, tables, and effect sizes.
+12. Document negative results and rejected approaches in `reports/` — what you tried and why it was rejected is as valuable as what worked.
