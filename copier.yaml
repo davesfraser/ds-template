@@ -89,19 +89,8 @@ _tasks:
   # Copy the single agent instructions source to all filenames that
   # different AI coding assistants expect at the project root
   # To add support for a new assistant, add its target path to this list
-  - command: >
-      python -c "
-      import shutil
-      from pathlib import Path
-      src = Path('.ai/agent-instructions.md')
-      targets = [
-          Path('AGENTS.md'),
-          Path('CLAUDE.md'),
-          Path('AGENT.md'),
-          Path('.github/copilot-instructions.md'),
-      ]
-      for target in targets:
-          target.parent.mkdir(parents=True, exist_ok=True)
-          shutil.copy(src, target)
-      print('AI assistant instruction files created from .ai/agent-instructions.md')
-      "
+  - command: >-
+      python -c "import shutil; from pathlib import Path;
+      [(__import__('pathlib').Path(t).parent.mkdir(parents=True, exist_ok=True),
+      shutil.copy('.ai/agent-instructions.md', t))
+      for t in ['AGENTS.md', 'CLAUDE.md', 'AGENT.md', '.github/copilot-instructions.md']]"
