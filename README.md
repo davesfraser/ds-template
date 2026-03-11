@@ -184,11 +184,6 @@ just render
 code .rendered
 ```
 
-**Note:** copier renders from the last commit — run `git commit` before
-`just check` to ensure your latest changes are included. Use `git commit
---amend` or `git reset --soft HEAD~1` to tidy up temporary commits after
-confirming the render is correct.
-
 ### Available commands
 
 | Command        | What it does                                          |

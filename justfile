@@ -1,5 +1,4 @@
-# Use PowerShell on Windows, sh on macOS and Linux
-# PowerShell handles quoted arguments correctly unlike cmd
+# Use cmd on Windows, sh on macOS and Linux
 set windows-shell := ["powershell", "-NoProfile", "-Command"]
 
 # Rendered output directory — gitignored, throwaway
@@ -17,11 +16,12 @@ check: render
     uv --directory {{rendered}} run pytest -q
     uv --directory {{rendered}} build --quiet
 
-# Note: copier renders from git HEAD — commit changes before running
-# to ensure the latest edits are included in the rendered output
+# Render the template only, without running checks
+# Useful for inspecting the rendered output directly
+# Usage: just render
 render:
     uv run python -c "import shutil; shutil.rmtree('.rendered', ignore_errors=True)"
-    uvx copier copy . {{rendered}} --defaults --overwrite --quiet
+    uvx copier copy . {{rendered}} --defaults --overwrite --vcs-ref HEAD --quiet
 
 # Remove the rendered output directory
 # Usage: just clean

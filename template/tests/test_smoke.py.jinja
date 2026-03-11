@@ -26,27 +26,6 @@ def test_project_root_exists() -> None:
     assert project_root().is_dir()
 
 
-def test_all_path_constants_are_paths_under_root() -> None:
-    root = project_root()
-    constants = [
-        DATA_DIR,
-        DATA_RAW,
-        DATA_INTERIM,
-        DATA_PROCESSED,
-        DATA_EXTERNAL,
-        MODELS_DIR,
-        FIGURES_DIR,
-        NOTEBOOKS_DIR,
-    ]
-
-    for p in constants:
-        assert isinstance(p, Path), f"Expected Path, got {type(p)}"
-        assert p.is_relative_to(root), (
-            f"{p.name} is not under the project root — "
-            "paths.py and the folder layout may be out of sync"
-        )
-
-
 def test_settings_loads() -> None:
     # Verify settings initialises without errors and returns typed values
     assert isinstance(settings.alpha, float)
@@ -58,19 +37,17 @@ def test_all_path_constants_are_paths_under_root() -> None:
     root = project_root()
     constants = [
         DATA_DIR,
-        DATA_RAW,
+        DATA_EXTERNAL,
         DATA_INTERIM,
         DATA_PROCESSED,
-        DATA_EXTERNAL,
-        MODELS_DIR,
+        DATA_RAW,
         FIGURES_DIR,
+        MODELS_DIR,
         NOTEBOOKS_DIR,
     ]
 
     for p in constants:
-        assert isinstance(p, Path), (
-            f"Expected Path, got {type(p)}"
-        )
+        assert isinstance(p, Path), f"Expected Path, got {type(p)}"
         assert p.is_relative_to(root), (
             f"{p.name} is not under the project root — "
             "paths.py and the folder layout may be out of sync"
