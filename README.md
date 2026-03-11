@@ -41,11 +41,11 @@ It may not be a good fit for:
 
 Generated projects ship with GitHub Copilot integration out of the box.
 
-`AGENTS.md` and `.github/copilot-instructions.md` load automatically
+`.github/copilot-instructions.md` loads automatically
 when you open the project, giving Copilot your project conventions
 without any configuration.
 
-The `ds-rules` skill loads automatically when Copilot detects an
+The `ds-rules` skill also loads automatically when Copilot detects an
 analytical task — EDA, hypothesis testing, modelling, evaluation, or
 visualisation. Invoke it manually with `/ds-rules` in Copilot Chat
 if needed.
