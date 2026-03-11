@@ -44,8 +44,7 @@ jobs:
         # rendered project's pyproject.toml reflects what we're testing
         run: |
           uvx --from copier copier copy . rendered --defaults \
-            --data python_min_version=${{ matrix.python-version }}
-            --trust
+            --data python_min_version=${{ matrix.python-version }} --trust
 
       - name: Create the rendered project's lockfile and install every group
         working-directory: rendered
