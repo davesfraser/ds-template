@@ -1,10 +1,12 @@
 ---
 name: ds-evaluation
 description: >
-  Model evaluation standards for {{ project_name }}.
-  Activate for model metrics, classification reports, regression scoring,
-  probability calibration, SHAP values, subgroup analysis, baseline
-  comparison, and final test set evaluation.
+  Use when evaluating model performance or reporting results. Triggers on:
+  accuracy, precision, recall, F1, AUC, ROC, confusion matrix, classification
+  report, log loss, Brier score, calibration curve, SHAP, feature importance,
+  MAE, RMSE, R2, mean absolute error, subgroup, fairness, baseline comparison,
+  predict_proba, score, evaluate, metrics, test set, held-out, explainability,
+  shap.Explainer, shap_values, CalibratedClassifierCV, cross_val_predict.
 user-invocable: true
 disable-model-invocation: false
 ---
