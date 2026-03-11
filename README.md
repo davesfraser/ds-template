@@ -13,7 +13,7 @@ It is not trying to be a general-purpose library template or a package designed 
 It gives you:
 
 - - a clean `src/` layout for reusable project code inside a checked-out repo
-- fast modern tooling with `uv`, `ruff`, `ty`, and `pytest`
+- fast modern tooling with `uv`, `ruff`, `mypy`, and `pytest`
 - Git-friendly notebook-style work with marimo
 - sensible VS Code defaults
 - a lightweight CI baseline
