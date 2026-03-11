@@ -122,6 +122,17 @@ If your project later needs typed settings loaded from environment variables or 
 uv add pydantic pydantic-settings
 ```
 
+## Updating an existing project from the template
+
+If the template has improved since you created your project, pull the
+changes in with:
+```bash
+uvx copier update
+```
+
+Copier will show you a diff of what would change and let you accept or
+reject each update. Commit the result as a normal change to your project.
+
 ## Project layout
 
 ```text
@@ -149,10 +160,56 @@ Generated project CI assumes the lockfile is committed and uses `uv sync --froze
 
 Template maintenance CI is different on purpose: it renders a sample project and checks that the onboarding path still works.
 
-## Maintainer note
+## Maintainer notes
+
+### Development workflow
+
+`.jinja` template files cannot be linted or formatted directly — ruff and mypy
+do not understand Jinja syntax. All code quality checks run against the rendered
+output in `.rendered/`, not the source template files.
+
+For any change to a `.jinja` file, run the full check suite locally before pushing:
+```bash
+just check
+```
+
+This renders the template into `.rendered/` and runs format, lint, marimo check,
+mypy, pytest, and build against the output — the same steps CI runs. Errors come
+back with real line numbers from the rendered file. Find the equivalent location
+in the `.jinja` source and fix it there.
+
+To inspect the rendered project directly:
+```bash
+just render
+code .rendered
+```
+
+**Note:** copier renders from the last commit — run `git commit` before
+`just check` to ensure your latest changes are included. Use `git commit
+--amend` or `git reset --soft HEAD~1` to tidy up temporary commits after
+confirming the render is correct.
+
+### Available commands
+
+| Command        | What it does                                          |
+|----------------|-------------------------------------------------------|
+| `just check`   | Render template and run full check suite — mirrors CI |
+| `just render`  | Render only, output goes to `.rendered/`              |
+| `just clean`   | Delete the `.rendered/` directory                     |
+
+### Making a release
+
+1. Update the version in the template repo's `pyproject.toml`
+2. Write release notes in GitHub Releases
+3. Tag the release: `git tag vX.Y.Z`
+4. Push: `git push && git push --tags`
+
+Copier uses git tags to identify template versions — the tag is required
+for `copier update` to work correctly in projects generated from this template.
+
+### Keeping root and template files aligned
 
 A few files exist both at the repo root and under `template/`.
-
 Keep them aligned on purpose:
 
 - `.vscode/settings.json`
@@ -160,59 +217,9 @@ Keep them aligned on purpose:
 - `.editorconfig`
 - `.gitattributes`
 
-A few others are similar but intentionally not identical because the template repo and generated repos have different jobs:
+A few others are similar but intentionally not identical because the template
+repo and generated repos have different jobs:
 
 - `.pre-commit-config.yaml`
 - `.gitignore`
 - GitHub Actions workflows
-
-## Template development workflow
-
-[just](https://just.systems) is used as the local task runner.
-Install it with:
-```bash
-# Windows
-winget install Casey.Just
-
-# macOS
-brew install just
-
-# Linux
-curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-```
-
-### Commands
-
-Render the template and run all checks — mirrors exactly what CI does:
-```bash
-just check
-```
-
-Render the template only, without running checks:
-```bash
-just render
-```
-
-Inspect the rendered output in VS Code:
-```bash
-just render
-code .rendered
-```
-
-Remove the rendered output directory:
-```bash
-just clean
-```
-
-### Why just check instead of pushing to CI
-
-`.jinja` template files cannot be linted or formatted directly — ruff and mypy
-do not understand Jinja syntax. All code quality checks run against the rendered
-output in `.rendered/`, not against the source template files.
-
-`just check` renders the template locally and runs the full check suite against
-the output. This gives you the same feedback as CI in seconds rather than waiting
-for a push.
-
-Pre-commit hooks handle fast file-level hygiene only — trailing whitespace, TOML
-and YAML validity, large file detection. They do not replace `just check`.

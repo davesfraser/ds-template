@@ -51,15 +51,15 @@ repos:
       # Apply Ruff formatting
       - id: ruff-format
 
-  # Reminds you to run 'make check' when template files change
+  # Reminds you to run 'just check' when template files change
   # This does not block the commit — it is advisory only
-  # The authoritative check is CI (template-smoke.yaml) or 'make check' locally
+  # The authoritative check is CI (template-smoke.yaml) or 'just check' locally
   - repo: local
     hooks:
       - id: jinja-changed-reminder
-        name: Jinja template files changed — run make check before pushing
+        name: Jinja template files changed — run 'just check' before pushing
         language: system
-        entry: bash -c 'echo "⚠ .jinja files changed — run make check to validate the rendered output"'
+        entry: uv run python -c "print('NOTE .jinja files changed — run just check to validate the rendered output')"
         files: \.jinja$
         pass_filenames: false
         verbose: true

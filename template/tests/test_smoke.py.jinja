@@ -52,3 +52,34 @@ def test_settings_loads() -> None:
     assert isinstance(settings.alpha, float)
     assert isinstance(settings.min_sample_size, int)
     assert settings.environment in {"development", "production"}
+
+
+def test_all_path_constants_are_paths_under_root() -> None:
+    root = project_root()
+    constants = [
+        DATA_DIR,
+        DATA_RAW,
+        DATA_INTERIM,
+        DATA_PROCESSED,
+        DATA_EXTERNAL,
+        MODELS_DIR,
+        FIGURES_DIR,
+        NOTEBOOKS_DIR,
+    ]
+
+    for p in constants:
+        assert isinstance(p, Path), (
+            f"Expected Path, got {type(p)}"
+        )
+        assert p.is_relative_to(root), (
+            f"{p.name} is not under the project root — "
+            "paths.py and the folder layout may be out of sync"
+        )
+        # Verify the directory actually exists on disk, not just that the
+        # path string is correctly formed — catches drift between paths.py
+        # and the folders the template creates
+        assert p.exists(), (
+            f"{p.name} does not exist on disk — "
+            "a directory may be missing from the template or paths.py "
+            "references a folder that was never created"
+        )

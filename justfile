@@ -17,9 +17,8 @@ check: render
     uv --directory {{rendered}} run pytest -q
     uv --directory {{rendered}} build --quiet
 
-# Render the template only, without running checks
-# Useful for inspecting the rendered output directly
-# Usage: just render
+# Note: copier renders from git HEAD — commit changes before running
+# to ensure the latest edits are included in the rendered output
 render:
     uv run python -c "import shutil; shutil.rmtree('.rendered', ignore_errors=True)"
     uvx copier copy . {{rendered}} --defaults --overwrite --quiet

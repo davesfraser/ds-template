@@ -21,7 +21,7 @@ readme = "README.md"
 # Ruff and ty can infer the project Python version from here
 requires-python = ">={{ python_min_version }}"
 
-authors = [{ name = "{{ author_name }}" }]
+authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
 
 license = { file = "LICENSE" }
 
@@ -188,7 +188,23 @@ select = [
     "C4",   # comprehensions
     "PIE",  # small correctness / cleanup wins
     "RUF",  # Ruff-native rules
-    "ANN",  # missing type annotations
+    # ANN enforces type annotations on all function arguments and return values
+    # in src/ — this is intentionally strict and reflects the template's view
+    # that analytical code benefits from explicit types for readability and
+    # for catching subtle bugs (wrong return type, unexpected None, etc)
+    #
+    # If this feels too aggressive for your project's current stage, you can
+    # relax it in two ways:
+    #
+    # Option 1 — disable ANN entirely by removing it from this list
+    #
+    # Option 2 — keep it but ignore specific rules that are causing noise:
+    #   "ANN001"  missing argument annotation
+    #   "ANN201"  missing return type on public function
+    #   "ANN202"  missing return type on private function
+    #
+    # Add whichever you want to the ignore list below
+    "ANN",  # type annotation coverage
     "NPY",  # NumPy-specific checks
     "PD",   # pandas-vet rules
 ]

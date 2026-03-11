@@ -38,6 +38,15 @@ author_name:
   help: What is the name of the main author or team name?
   default: Your Name
 
+author_email:
+  type: str
+  help: Contact email address for pyproject.toml metadata
+  default: you@example.com
+  validator: >-
+    {% if not (author_email | regex_search('^[^@]+@[^@]+\.[^@]+$')) %}
+    author_email must be a valid email address (e.g. you@example.com)
+    {% endif %}
+
 python_min_version:
   type: str
   help: >-

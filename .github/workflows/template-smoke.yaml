@@ -14,14 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    strategy:
+      # Run all versions even if one fails so you see the full picture
+      fail-fast: false
+      matrix:
+        # Mirror the python_min_version choices in copier.yaml exactly
+        # If you add or remove a version from copier.yaml, update this too
+        python-version: ["3.12", "3.13"]
+        # 3.14 is excluded from CI until the scientific stack has
+        # reliable wheel coverage — see the copier.yaml help text
+        # Add it here when uv sync --all-groups passes cleanly on 3.14
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
-          python-version-file: ".python-version"
+          python-version: ${{ matrix.python-version }}
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v7
@@ -29,7 +40,11 @@ jobs:
           enable-cache: true
 
       - name: Render sample project from template
-        run: uvx --from copier copier copy . rendered --defaults
+        # Pass the matrix Python version as the copier answer so the
+        # rendered project's pyproject.toml reflects what we're testing
+        run: |
+          uvx --from copier copier copy . rendered --defaults \
+            --data python_min_version=${{ matrix.python-version }}
 
       - name: Create the rendered project's lockfile and install every group
         working-directory: rendered
