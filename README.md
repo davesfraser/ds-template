@@ -39,64 +39,19 @@ It may not be a good fit for:
 
 ## AI coding assistant integration
 
-Generated projects ship with structured guidance that AI coding assistants pick up automatically. This means assistants like Copilot, Cursor, Gemini Code Assist, and Claude Code generate code that follows your project's conventions without you having to explain them on every prompt.
+Generated projects ship with GitHub Copilot integration out of the box.
 
-### What loads automatically
+`AGENTS.md` and `.github/copilot-instructions.md` load automatically
+when you open the project, giving Copilot your project conventions
+without any configuration.
 
-When you open a generated project, your AI assistant reads `AGENTS.md` from the project root without any configuration. This file contains project-specific rules: where code lives, how paths and settings are imported, polars-first conventions, and the commands to run. The following assistants pick it up automatically:
+The `ds-rules` skill loads automatically when Copilot detects an
+analytical task — EDA, hypothesis testing, modelling, evaluation, or
+visualisation. Invoke it manually with `/ds-rules` in Copilot Chat
+if needed.
 
-- GitHub Copilot
-- Cursor
-- Gemini Code Assist (as `AGENT.md`)
-- Claude Code (as `CLAUDE.md`)
-- OpenAI Codex, Google Jules, Windsurf, Zed, Warp, Amp, and others
-
-All four files (`AGENTS.md`, `AGENT.md`, `CLAUDE.md`, `.github/copilot-instructions.md`) are generated from a single source at `.ai/agent-instructions.md` — edit that file to update conventions across all assistants at once.
-
-### Loading data science best-practice standards
-
-`.ai/ds-rules.md` contains a comprehensive set of analytical standards covering experimental design, hypothesis testing, EDA, data leakage prevention, model evaluation, and visualisation. Load it at the start of any analytical task:
-
-| Assistant | How to load |
-|---|---|
-| GitHub Copilot in VS Code | Type `/ds-rules` in Copilot Chat |
-| Gemini Code Assist | Type `@.ai/ds-rules.md` in the chat |
-| Claude Code | Type `@.ai/ds-rules.md` in the chat |
-| Cursor | Drag `.ai/ds-rules.md` into the chat window |
-| Windsurf | Drag `.ai/ds-rules.md` into the chat window |
-
-### Example usage
-
-Starting an EDA task in Copilot Chat:
-```
-/ds-rules
-
-I have a dataset at data/raw/survey_2024.parquet with columns: age, income,
-region, churn. Walk me through an EDA for a churn prediction project.
-```
-
-Starting a modelling task in Cursor:
-```
-[drag .ai/ds-rules.md into chat]
-
-Build a baseline churn classification model using the processed dataset
-at data/processed/features.parquet. Follow the structured analysis workflow
-checklist.
-```
-
-Starting any task in Claude Code:
-```
-@.ai/ds-rules.md @AGENTS.md
-
-Write a function in src/ to load and validate the raw survey data,
-checking schema, nulls, and class balance.
-```
-
-### Updating AI instructions for your project
-
-As your project evolves, update `.ai/agent-instructions.md` to reflect any project-specific conventions. This is the single source of truth — do not edit `AGENTS.md`, `CLAUDE.md`, or `AGENT.md` directly as they are generated files.
-
----
+Support for other AI assistants (Cursor, Gemini, Claude Code) is
+planned for a future release.
 
 ## Create a new project from this template
 

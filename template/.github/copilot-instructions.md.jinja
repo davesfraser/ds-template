@@ -1,8 +1,7 @@
-<!-- This file is the single source of truth for AI assistant instructions -->
-<!-- It is copied automatically to AGENTS.md, CLAUDE.md, AGENT.md, and    -->
-<!-- .github/copilot-instructions.md when the project is created           -->
-<!-- Edit this file only — changes here propagate to all AI assistant      -->
-<!-- instruction files when the project is next updated via copier         -->
+<!-- This file loads automatically in GitHub Copilot for every request  -->
+<!-- It contains project conventions only — analytical standards are     -->
+<!-- handled by the ds-rules skill which loads on demand                 -->
+<!-- Do not add ds-rules content here — keep this file short and focused -->
 
 # {{ project_name }}
 
@@ -55,7 +54,7 @@ data/interim/               intermediate data
 data/processed/             final datasets
 models/                     serialised model artefacts
 reports/figures/            generated plots
-.ai/                        AI assistant guidance files
+.github/skills/             Copilot skill definitions
 ```
 
 ---
@@ -85,12 +84,7 @@ uv run ruff format .       # format
 
 # Data science standards
 
-All analytical code must follow the standards defined in:
-
-`.ai/ds-rules.md`
-
-Load it before starting any analytical task:
-- **GitHub Copilot:** type `/ds-rules` in Copilot Chat
-- **Gemini Code Assist:** type `@.ai/ds-rules.md` in the chat
-- **Cursor / Windsurf:** drag `.ai/ds-rules.md` into the chat window
-- **Claude Code:** type `@.ai/ds-rules.md` in the chat
+Detailed analytical standards are available as a Copilot skill.
+The `ds-rules` skill loads automatically when Copilot detects an
+analytical task. Invoke it manually with `/ds-rules` in Copilot Chat
+if needed.

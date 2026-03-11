@@ -1,13 +1,24 @@
-# data-science-best-practice — {{ project_name }}
+---
+name: ds-rules
+description: >
+  Data science best practice standards for {{ project_name }}.
+  Activate this skill when writing analytical code, conducting EDA,
+  hypothesis testing, building models, evaluating results, or producing
+  visualisations and reports. Also activate for any task involving
+  data loading, cleaning, transformation, or statistical analysis.
+user-invocable: true
+---
+
+# Data Science Standards — {{ project_name }}
 
 Reference these standards when writing analytical code, notebooks, or
-reports for this project. Read the relevant sections for the task at hand.
+reports for this project.
 
 ---
 
 # ai-assistant-quick-summary
 
-Key analytical rules for AI coding assistants:
+Key analytical rules:
 
 - EDA before modelling
 - Train/test split before preprocessing
@@ -60,7 +71,7 @@ RULE: Persist expensive intermediate computations to `data/interim/` to avoid re
 
 RULE: State research questions precisely before touching the data.
 RULE: Distinguish exploratory from confirmatory work.
-RULE: Avoid HARKing.
+RULE: Avoid HARKing (Hypothesizing After Results are Known) — do not present a hypothesis as if it was specified in advance when it was developed after seeing the data.
 RULE: Pre-specify primary metrics before analysis.
 RULE: Pre-specify minimum effect sizes for practical relevance.
 RULE: Identify and document confounding variables before analysis.
@@ -179,7 +190,7 @@ RULE: Property-based tests using `hypothesis` are appropriate for functions with
 
 # configuration-driven-experiments
 
-RULE: Parameterise experiments via configuration, not hard-coded constants.
+RULE: Parameterize experiments via configuration, not hard-coded constants.
 RULE: All analysis parameters should live in `settings.py` or a config file.
 
 ---
