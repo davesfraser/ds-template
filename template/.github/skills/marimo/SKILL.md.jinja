@@ -187,7 +187,7 @@ RULE: Call the inner function as the last expression: `return _()`.
 RULE: Call `plt.tight_layout()` inside the inner function before returning.
 RULE: For plotly / altair — return the figure object directly as the last
 expression, no inner function needed.
-RULE: Save figures to `FIGURES_DIR` from `data_science_project.paths`.
+RULE: Save figures to `FIGURES_DIR` from `{{ package_name }}.paths`.
 ```python
 # correct — single axes
 @app.cell

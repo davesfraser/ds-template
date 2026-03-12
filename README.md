@@ -18,7 +18,7 @@ It gives you:
 - sensible VS Code defaults
 - a lightweight CI baseline
 - dependency groups that are easy to extend
-- built-in AI coding assistant integration with project conventions and data science best-practice standards that load automatically in Copilot, Cursor, Gemini Code Assist, Claude Code, and others
+- built-in GitHub Copilot integration with project conventions and data science best-practice standards that load automatically
 
 It is **not** aimed at notebook-only or Jupyter-heavy workflows where almost everything lives in `.ipynb` files.
 
@@ -41,17 +41,41 @@ It may not be a good fit for:
 
 Generated projects ship with GitHub Copilot integration out of the box.
 
-`.github/copilot-instructions.md` loads automatically
-when you open the project, giving Copilot your project conventions
-without any configuration.
+`.github/copilot-instructions.md` loads automatically when you open the project in VS Code, giving Copilot your project conventions without any configuration.
 
-The `ds-rules` skill also loads automatically when Copilot detects an
-analytical task — EDA, hypothesis testing, modelling, evaluation, or
-visualisation. Invoke it manually with `/ds-rules` in Copilot Chat
-if needed.
+Seven skills live in `.github/skills/` and load automatically based on the task at hand:
 
-Support for other AI assistants (Cursor, Gemini, Claude Code) is
-planned for a future release.
+| Skill | Activates when |
+|---|---|
+| `ds-workflow` | Given a business question or dataset to analyse — invoke this first |
+| `ds-eda` | Loading data, checking quality, exploring distributions |
+| `ds-stats` | Hypothesis testing, effect sizes, experimental design |
+| `ds-modelling` | Pipelines, feature engineering, model training |
+| `ds-evaluation` | Model metrics, SHAP, calibration, subgroup analysis |
+| `ds-visualisation` | Charts, figures, tables, colour, labelling |
+| `marimo` | Writing or editing `.py` notebook files |
+
+You can also invoke any skill manually in Copilot Chat, for example `/ds-workflow` or `/ds-stats`.
+
+### Example prompt
+
+The most effective way to start an analysis is to hand Copilot a business question, a dataset, and ask it to plan before writing any code:
+
+```
+/ds-workflow
+
+Business question: What factors drive resale price for second-hand vehicles
+in this dataset, and what price should I list my car for?
+
+Dataset: data/raw/vehicles.csv
+
+Before writing any code:
+1. List the planned deliverables (notebooks, src/ modules, tests, script, report, figures)
+2. Identify which workflow stages apply to this question
+3. Identify which skills apply at each stage
+```
+
+Asking Copilot to plan deliverables and stages before writing forces it to engage the workflow and skill guidance properly. Skipping straight to "write me the EDA" produces lower-quality output that ignores the standards.
 
 ## Create a new project from this template
 
@@ -95,15 +119,17 @@ By default, `uv sync` installs:
 
 Optional groups are available when needed:
 
-- `data-pandas`
-- `validation`
-- `vis-static`
-- `vis-interactive`
-- `ml`
+| Group | What it adds |
+|---|---|
+| `data-pandas` | pandas and pandas-stubs — opt-in only, required by some libraries (e.g. statsmodels formula API) |
+| `validation` | pandera with polars support |
+| `vis-static` | matplotlib and seaborn |
+| `vis-interactive` | plotly |
+| `ml` | scikit-learn |
 
 Examples:
 ```bash
-uv sync
+uv sync --group data-pandas
 uv sync --group validation
 uv sync --group vis-static --group vis-interactive
 uv sync --group ml
@@ -145,8 +171,8 @@ scripts/                reproducible analysis entrypoints
 notebooks/marimo/       exploratory notebook-style work as Python files
 data/                   raw, interim, processed, external
 models/                 model artefacts
-reports/figures/        generated figures
-.ai/                    AI assistant guidance files
+reports/                analysis reports and generated figures
+.github/skills/         Copilot skill definitions
 ```
 
 Use `src/` for logic you want to keep.
@@ -225,7 +251,3 @@ repo and generated repos have different jobs:
 - `.pre-commit-config.yaml`
 - `.gitignore`
 - GitHub Actions workflows
-
-The AI assistant instruction files (`AGENTS.md`, `CLAUDE.md`, `AGENT.md`,
-`.github/copilot-instructions.md`) are generated from
-`template/.ai/agent-instructions.md.jinja` — do not edit them directly.

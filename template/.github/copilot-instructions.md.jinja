@@ -37,7 +37,7 @@ organised by responsibility — data loading, features, models, visualisation,
 and evaluation as separate modules.
 RULE: Every analytical task must produce pytest tests covering all src/
 functions.
-RULE: Every analytical task must produce a script in scripts/ under 50 lines
+RULE: Every analytical task must produce a script in scripts/ under 100 lines
 that orchestrates src/ functions end-to-end.
 RULE: Every analytical task must produce a report in reports/ following the
 report template.
@@ -63,7 +63,7 @@ RULE: All Python commands must be executed via `uv run`.
 RULE: Scripts must produce deterministic outputs when given the same inputs.
 RULE: Scripts orchestrate pipelines — they call `src/` functions, they do
 not implement logic directly.
-RULE: Scripts must never exceed 50 lines excluding comments and imports — if
+RULE: Scripts must never exceed 100 lines excluding comments and imports — if
 a script grows beyond this, logic is leaking out of src/ into the script.
 RULE: At the top of every generated file, include a comment stating which
 skills were applied — e.g. `# applied-skills: ds-eda, ds-visualisation`.

@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     # Minimum observations required before running statistical tests
     min_sample_size: int = Field(default=30)
 
+    # Set a fixed random seed for reproducibility
+    random_seed: int = Field(default=42)
+
 
 # A single shared instance for import throughout the project
 # Usage: from {{ package_name }}.settings import settings

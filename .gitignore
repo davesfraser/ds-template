@@ -55,8 +55,8 @@ template/data/external/*
 # These are outputs/binary data not source code
 template/models/*
 template/reports/figures/*
-!/template/reports/figures/README.md
 
 # Keep these folders present in the template
 !template/models/.gitkeep
 !/template/reports/figures/.gitkeep
+!/template/reports/figures/README.md.jinja

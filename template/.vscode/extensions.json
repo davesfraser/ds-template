@@ -1,4 +1,4 @@
-json{
+{
   "recommendations": [
     // Core Python editing support
     "ms-python.python",
