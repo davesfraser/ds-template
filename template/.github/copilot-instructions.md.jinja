@@ -3,9 +3,9 @@
 <!-- handled by the ds-rules skill which loads on demand                 -->
 <!-- Do not add ds-rules content here — keep this file short and focused -->
 
-# {{ project_name }}
+# Data science project
 
-{{ project_description }}
+Modern Python data science project
 
 This repository contains a reproducible data science analysis project.
 AI coding assistants must follow the rules in this document when generating code.
@@ -14,12 +14,12 @@ AI coding assistants must follow the rules in this document when generating code
 
 # Core rules
 
-RULE: All reusable code lives in `src/{{ package_name }}`.
+RULE: All reusable code lives in `src/data_science_project`.
 RULE: Notebooks are for exploration only — do not implement reusable logic inside notebooks.
 RULE: Notebooks must remain lightweight and primarily call functions from `src/`.
-RULE: All filesystem paths must be imported from `{{ package_name }}.paths`.
+RULE: All filesystem paths must be imported from `data_science_project.paths`.
 RULE: Never construct filesystem paths manually using strings.
-RULE: All configuration values must be imported from `{{ package_name }}.settings`.
+RULE: All configuration values must be imported from `data_science_project.settings`.
 RULE: All dataframe operations must use Polars.
 EXCEPTION: Pandas may only be used when required by an external library.
 RULE: When an external library requires pandas, convert at the call site only.
@@ -37,7 +37,7 @@ RULE: Figures are named `<subject>_<chart_type>.png` using underscores — e.g. 
 
 # Project stack
 
-- Python {{ python_min_version }}+
+- Python 3.13+
 - polars for dataframe operations
 - marimo for notebooks
 - uv for environment and dependency management
@@ -49,7 +49,7 @@ RULE: Figures are named `<subject>_<chart_type>.png` using underscores — e.g. 
 
 # Project structure
 ```text
-src/{{ package_name }}/     reusable project code
+src/data_science_project/     reusable project code
 tests/                      pytest tests
 scripts/                    reproducible analysis entrypoints
 notebooks/marimo/           exploratory notebooks
@@ -71,6 +71,8 @@ RULE: Do not duplicate logic across notebooks.
 RULE: Scripts orchestrate analysis pipelines — logic lives in `src/`, not in scripts.
 RULE: Functions must be deterministic and avoid hidden global state.
 RULE: New functionality in `src/` must include pytest tests.
+RULE: Never write stage functions that combine multiple analytical steps — e.g. def stage_3_eda(), def stage_6_prepare_data(). These are untestable,non-reusable, and conflate data computation, visualisation, and IO.
+RULE: src/ functions must have a single responsibility — data computation, visualisation, and IO are always separate functions.
 
 ---
 
