@@ -39,10 +39,11 @@ RULE: Generate cells that exactly match the plan.
 - Every global variable must be defined in exactly one cell
 - Cell parameters = variables needed from upstream; return tuple = variables exported downstream
 - The last expression of a cell is its visual output — not a return statement
-- Never use `plt.show()` — use `plt.gca()` or `plt.gcf()` as the last expression
+- Never use `plt.show()` — return `fig` from the inner `def _():` as the last expression
+- Never use `mo.mpl.interactive()` — it has known rendering bugs across platforms
 - Never write raw HTML strings — use marimo's built-in components
 - Never mutate a variable defined in another cell — use a new variable name
-- For cells with mostly throwaway variables, wrap the body in `def _():` — variables inside are fully local and can reuse common names like `fig`, `ax`, `result`, `stats` across cells without conflict
+- For cells with mostly throwaway variables, wrap the body in `def _():` and call it as the last expression with `return _()`
 - Only prefix with `_` when mixing one or two locals with exported variables
 - `print()` appears in the console, not the cell output area
 
@@ -99,19 +100,19 @@ def _(df):
 **Pattern 2 — inner `def _():`:** use for cells where most variables are
 throwaway — plots, statistical summaries, temporary subsets. Variables inside
 the function are fully local and common names like `fig`, `ax`, `result`,
-`stats` can be reused freely across multiple cells without conflict:
+`stats` can be reused freely across multiple cells without conflict.
+Call the function as the last expression with `return _()`:
 ```python
 @app.cell
-def _(df, mo):
+def _(df):
     def _():
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()        # fully local — no conflict with other cells
         ax.hist(df["price"], bins=30)
         ax.set_xlabel("Price (£)")
         plt.tight_layout()
-        return plt.gca()
-    mo.mpl.interactive(_())
-    return
+        return fig
+    return _()                          # call and return — displays the figure
 ```
 
 **ANTI-PATTERN — parameter missing from signature:**
@@ -158,6 +159,8 @@ RULE: To display output during a running loop, use `mo.output.append()`.
 
 RULE: Return as a tuple — even for a single value: `return (df,)` not `return df`.
 RULE: Variables not returned are invisible to all other cells.
+RULE: When using an inner `def _():`, call it and return the result:
+`return _()` — this is both the display expression and the cell return.
 
 ---
 
@@ -171,31 +174,48 @@ RULE: Never construct raw HTML table strings.
 
 # displaying-plots
 
-RULE: Always wrap matplotlib plot code in an inner `def _():` — this keeps
-`fig`, `ax`, and all intermediate variables fully local so they can be reused
-freely across multiple plot cells without conflict.
-RULE: Return `plt.gca()` or `plt.gcf()` from the inner function — never call `plt.show()`.
-RULE: For plotly / altair — return the figure object directly as the last expression.
-RULE: For interactive matplotlib (pan/zoom), pass the inner function result to `mo.mpl.interactive()`.
-RULE: Call `plt.tight_layout()` before returning from the inner function if labels are cut off.
+RULE: Never use `mo.mpl.interactive()` — it has known rendering bugs and
+produces blank output unreliably across platforms.
+RULE: Always wrap matplotlib plot code in an inner `def _():` to keep `fig`,
+`ax`, and all intermediate variables fully local — they can be reused freely
+across multiple plot cells without conflict.
+RULE: Always return `fig` from the inner function — never `plt.gca()` or
+`plt.gcf()`. `plt.gca()` returns only the last active axes and fails for
+multi-axes figures.
+RULE: Never call `plt.show()` — it clears the figure and produces no output.
+RULE: Call the inner function as the last expression: `return _()`.
+RULE: Call `plt.tight_layout()` inside the inner function before returning.
+RULE: For plotly / altair — return the figure object directly as the last
+expression, no inner function needed.
 RULE: Save figures to `FIGURES_DIR` from `data_science_project.paths`.
 ```python
-# correct — inner def keeps fig and ax local
+# correct — single axes
 @app.cell
-def _(df, mo):
+def _(df):
     def _():
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
         ax.hist(df["price"], bins=30)
         ax.set_xlabel("Price (£)")
         plt.tight_layout()
-        return plt.gca()
-    mo.mpl.interactive(_())
-    return
+        return fig              # always return fig, not plt.gca()
+    return _()
+
+# correct — multiple axes
+@app.cell
+def _(df):
+    def _():
+        import matplotlib.pyplot as plt
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+        axes[0].hist(df["price"], bins=30)
+        axes[1].hist(df["mileage"], bins=30)
+        plt.tight_layout()
+        return fig              # must return fig for multi-axes
+    return _()
 
 # another plot cell — fig and ax reused freely, no conflict
 @app.cell
-def _(df, mo):
+def _(df):
     def _():
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
@@ -203,9 +223,8 @@ def _(df, mo):
         ax.set_xlabel("Mileage")
         ax.set_ylabel("Price (£)")
         plt.tight_layout()
-        return plt.gca()
-    mo.mpl.interactive(_())
-    return
+        return fig
+    return _()
 ```
 
 ---
