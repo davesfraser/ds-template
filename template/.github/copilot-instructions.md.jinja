@@ -29,6 +29,9 @@ RULE: All Python commands must be executed via `uv run`.
 RULE: Scripts must produce deterministic outputs when given the same inputs.
 RULE: Scripts orchestrate pipelines — they call `src/` functions, they do not implement logic directly.
 RULE: At the top of every generated file or code block, include a comment stating which skills were applied, for example - # applied-skills: ds-eda, ds-visualisation
+RULE: Notebooks are named `<stage>_<activity>.py` using underscores — e.g. `01_eda.py`, `02_hypothesis_testing.py`, `03_modelling.py`.
+RULE: Reports are named `YYYY-MM-DD_<activity>.md` using hyphens — e.g. `2026-03-12_eda_findings.md`, `2026-03-12_model_evaluation.md`.
+RULE: Figures are named `<subject>_<chart_type>.png` using underscores — e.g. `price_distribution_histogram.png`, `mileage_vs_price_scatter.png`.
 
 ---
 

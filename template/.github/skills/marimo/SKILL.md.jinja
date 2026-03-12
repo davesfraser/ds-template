@@ -1,7 +1,7 @@
 ---
 name: marimo
 description: >
-  Use when writing, editing, or debugging marimo notebooks for {{ project_name }}.
+  Use when creating, writing, editing, or debugging marimo notebooks for Data science project.
   Activate for any .py file containing @app.cell decorators, marimo notebook
   structure, reactive execution, cell outputs, UI elements, dataframe display,
   plotting, layout, mo.md, mo.ui, mo.hstack, mo.vstack, marimo App definition,
@@ -10,22 +10,41 @@ description: >
 user-invocable: true
 ---
 
-# Marimo Notebook Standards — {{ project_name }}
+# Marimo Notebook Standards — Data science project
+
+---
+
+# plan-first
+
+RULE: Before writing any notebook code, produce a cell dependency plan as a
+comment block:
+```
+# Cell plan:
+# cell 1: imports           params ()           returns (mo, pl)
+# cell 2: load_raw_data     params (pl)         returns (df_raw,)
+# cell 3: display_schema    params (mo, df_raw) returns ()
+# cell 4: clean_data        params (df_raw)     returns (df_clean,)
+```
+
+RULE: Every variable that appears in a cell's parameter list must be returned
+by exactly one upstream cell — verify this in the plan before writing any code.
+RULE: No variable name may appear in more than one cell's return tuple.
+RULE: Generate cells that exactly match the plan.
 
 ---
 
 # ai-assistant-quick-summary
 
-- Every global variable must be defined in exactly one cell — no exceptions
+- Plan the cell dependency graph before writing any code
+- Every global variable must be defined in exactly one cell
+- Cell parameters = variables needed from upstream; return tuple = variables exported downstream
 - The last expression of a cell is its visual output — not a return statement
-- All imports go inside cells, not at the top of the file
-- `app = marimo.App()` must follow immediately after `import marimo` at module level
 - Never use `plt.show()` — use `plt.gca()` or `plt.gcf()` as the last expression
 - Never write raw HTML strings — use marimo's built-in components
-- Every cell that produces a value used downstream must return it as a tuple
-- Prefix private variables with `_` to keep them local to a cell
-- Never mutate a variable defined in another cell — redefine it instead
-- `print()` output appears in the console area, not the cell output area
+- Never mutate a variable defined in another cell — use a new variable name
+- For cells with mostly throwaway variables, wrap the body in `def _():` — variables inside are fully local and can reuse common names like `fig`, `ax`, `result`, `stats` across cells without conflict
+- Only prefix with `_` when mixing one or two locals with exported variables
+- `print()` appears in the console, not the cell output area
 
 ---
 
@@ -34,8 +53,7 @@ user-invocable: true
 RULE: Every marimo notebook must follow this exact module-level structure:
 ```python
 import marimo                          # module-level import — no alias here
-                                       # __generated_with is written by marimo automatically
-app = marimo.App(width="medium")       # must follow immediately after import marimo
+app = marimo.App(width="medium")       # must immediately follow import marimo
 
 @app.cell
 def _():
@@ -48,129 +66,145 @@ if __name__ == "__main__":
     app.run()
 ```
 
-RULE: `import marimo` and `app = marimo.App()` must be at module level — this is what VS Code and the marimo extension use to recognise the file as a marimo notebook.
+RULE: `import marimo` and `app = marimo.App()` at module level — VS Code requires this to recognise the file as a marimo notebook.
 RULE: `import marimo as mo` belongs inside the first cell, not at module level.
-RULE: `if __name__ == "__main__": app.run()` must be the last line of every notebook.
-RULE: Do not add `__generated_with = ...` manually — marimo writes this itself on first run.
+RULE: `if __name__ == "__main__": app.run()` must be the last line.
+RULE: Do not add `__generated_with = ...` manually — marimo writes this itself.
 
 ---
 
-# reactive-execution-model
+# variable-scoping
 
-RULE: Every global variable must be defined by exactly one cell — marimo will refuse to run a notebook where the same variable name is defined in two different cells.
-RULE: Execution order is determined by variable dependencies, not by cell position on the page — do not assume cells run top to bottom.
-RULE: Prefix variables with `_` to make them local to a cell — local variables are invisible to other cells and do not need to be unique across the notebook.
-RULE: Never define a variable in one cell and mutate it in another — marimo does not track mutations. If you need to add a column to a dataframe, do it in the same cell that defines the dataframe, or assign the result to a new variable name.
-RULE: Never use `global` — it has no meaning in marimo's reactive model.
-RULE: Deleting a cell removes its variables from program memory automatically.
+RULE: Every global variable must be defined by exactly one cell — reusing a
+name across cells causes MultipleDefinitionError.
+RULE: Execution order is determined by variable dependencies, not cell position.
+RULE: Cell function parameters must exactly match variable names returned by
+upstream cells — marimo injects dependencies by name. A missing parameter
+causes NameError at runtime.
+RULE: Never mutate a variable from another cell — assign to a new name instead.
+RULE: Never use `global`.
 
-**Correct pattern — mutation in same cell:**
+**Two patterns for local variables — choose based on how many locals the cell has:**
+
+**Pattern 1 — `_` prefix:** use when a cell exports some variables and has
+one or two local intermediates:
 ```python
 @app.cell
-def _():
-    import polars as pl
-    df = pl.read_parquet("data/raw/data.parquet")
-    df = df.with_columns(pl.col("price").log().alias("log_price"))  # mutation here
-    return (df,)
+def _(df):
+    _mask = df["price"] > 0       # local intermediate — prefixed
+    df_clean = df.filter(_mask)   # exported — no prefix
+    return (df_clean,)
 ```
 
-**Incorrect pattern — mutation across cells:**
+**Pattern 2 — inner `def _():`:** use for cells where most variables are
+throwaway — plots, statistical summaries, temporary subsets. Variables inside
+the function are fully local and common names like `fig`, `ax`, `result`,
+`stats` can be reused freely across multiple cells without conflict:
 ```python
 @app.cell
-def _():
-    df = pl.read_parquet("data/raw/data.parquet")
-    return (df,)
+def _(df, mo):
+    def _():
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()        # fully local — no conflict with other cells
+        ax.hist(df["price"], bins=30)
+        ax.set_xlabel("Price (£)")
+        plt.tight_layout()
+        return plt.gca()
+    mo.mpl.interactive(_())
+    return
+```
 
+**ANTI-PATTERN — parameter missing from signature:**
+```python
 @app.cell
-def _(df):                             # WRONG — mutating df defined above
-    df = df.with_columns(...)          # marimo will raise a multiple-definition error
+def _(mo):
+    mo.ui.table(stats_df)    # NameError — stats_df not declared as parameter
+    return
+```
+```python
+@app.cell
+def _(mo, stats_df):         # correct — stats_df declared, marimo injects it
+    mo.ui.table(stats_df)
+    return
+```
+
+**ANTI-PATTERN — variable redefined across cells:**
+```python
+@app.cell
+def _(df):
+    df = df.filter(...)      # MultipleDefinitionError — df already defined above
     return (df,)
+```
+```python
+@app.cell
+def _(df):
+    df_filtered = df.filter(...)   # correct — new variable name
+    return (df_filtered,)
 ```
 
 ---
 
 # cell-outputs
 
-RULE: The last expression of a cell is its visual output — it is rendered above the cell automatically.
-RULE: Do not use `print()` to display outputs — print output appears in the console area below the cell, not in the output area, and is not included in the app view.
-RULE: Do not use `return` to display outputs — `return` in a cell function is for passing variables to downstream cells, not for display.
-RULE: To display multiple outputs from one cell, use `mo.vstack()`, `mo.hstack()`, or `mo.output.append()`.
-RULE: To display output imperatively while a cell is running (e.g. during a loop), use `mo.output.append()`.
-RULE: Console outputs (`print`, `stderr`) can be included in the output area using `mo.redirect_stdout()` or `mo.redirect_stderr()` if needed.
+RULE: The last expression of a cell is its visual output.
+RULE: Do not use `print()` for outputs — appears in console only.
+RULE: Do not use `return` for display — return is for passing values downstream.
+RULE: To display multiple outputs, use `mo.vstack([...])` or `mo.hstack([...])`.
+RULE: To display output during a running loop, use `mo.output.append()`.
 
 ---
 
 # cell-return-values
 
-RULE: Every cell that defines a variable used by another cell must return that variable in a tuple.
-RULE: Return statements are always tuples — even for a single value: `return (df,)` not `return df`.
-RULE: Variables not returned from a cell are invisible to all other cells.
-RULE: Cell function parameters must match the names of variables returned by upstream cells exactly — marimo injects dependencies by name.
-
-**Correct pattern:**
-```python
-@app.cell
-def _(mo):
-    import polars as pl
-    df = pl.read_parquet("data/raw/data.parquet")
-    return (df, pl)                    # both available to downstream cells
-
-@app.cell
-def _(df, mo):                         # df injected by name from above
-    mo.ui.table(df)                    # last expression — displayed as output
-    return                             # nothing to pass downstream
-```
+RULE: Return as a tuple — even for a single value: `return (df,)` not `return df`.
+RULE: Variables not returned are invisible to all other cells.
 
 ---
 
 # displaying-dataframes
 
-RULE: Use `mo.ui.table(df)` as the last expression to display a dataframe as an interactive, paginated, sortable table.
-RULE: Use `mo.ui.dataframe(df)` to display an interactive GUI for transforming a dataframe — the transformed result is available via `.value`.
-RULE: A bare dataframe as the last expression also renders with marimo's rich viewer — use this for quick inspection.
-RULE: Never construct raw HTML table strings to display dataframes — `mo.ui.table()` is always better.
-RULE: Use `pagination=True` on `mo.ui.table()` for large dataframes.
-```python
-@app.cell
-def _(df, mo):
-    mo.ui.table(df, pagination=True)   # correct
-    return
-
-# NOT this:
-@app.cell
-def _(df, mo):
-    html = "<table>..." + ...          # wrong — raw HTML is fragile and unnecessary
-    mo.Html(html)
-    return
-```
+RULE: Use `mo.ui.table(df, pagination=True)` for interactive paginated tables.
+RULE: A bare dataframe as the last expression renders marimo's rich viewer — fine for quick inspection.
+RULE: Never construct raw HTML table strings.
 
 ---
 
 # displaying-plots
 
-RULE: For matplotlib — use `plt.gca()` or `plt.gcf()` as the last expression, never `plt.show()`. `plt.show()` clears the figure and produces no output in marimo.
-RULE: For plotly — return the figure object directly as the last expression.
-RULE: For altair — return the chart object directly as the last expression.
-RULE: To make matplotlib plots interactive (pan, zoom), wrap with `mo.mpl.interactive(ax)`.
-RULE: To make matplotlib or altair plots reactive (selection feeds back to Python), wrap with `mo.ui.matplotlib(ax)` or `mo.ui.altair_chart(chart)` and access selections via `.value`.
-RULE: Call `plt.tight_layout()` before the final expression if axis labels are being cut off.
-RULE: Save figures to `FIGURES_DIR` from `{{ package_name }}.paths` — never hardcode output paths.
+RULE: Always wrap matplotlib plot code in an inner `def _():` — this keeps
+`fig`, `ax`, and all intermediate variables fully local so they can be reused
+freely across multiple plot cells without conflict.
+RULE: Return `plt.gca()` or `plt.gcf()` from the inner function — never call `plt.show()`.
+RULE: For plotly / altair — return the figure object directly as the last expression.
+RULE: For interactive matplotlib (pan/zoom), pass the inner function result to `mo.mpl.interactive()`.
+RULE: Call `plt.tight_layout()` before returning from the inner function if labels are cut off.
+RULE: Save figures to `FIGURES_DIR` from `data_science_project.paths`.
 ```python
-# matplotlib — correct
+# correct — inner def keeps fig and ax local
 @app.cell
-def _(mo):
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    ax.hist(df["price"], bins=30)
-    ax.set_xlabel("Price (£)")
-    plt.tight_layout()
-    plt.gca()                          # last expression — displays the plot
+def _(df, mo):
+    def _():
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        ax.hist(df["price"], bins=30)
+        ax.set_xlabel("Price (£)")
+        plt.tight_layout()
+        return plt.gca()
+    mo.mpl.interactive(_())
     return
 
-# matplotlib — wrong
+# another plot cell — fig and ax reused freely, no conflict
 @app.cell
-def _():
-    plt.show()                         # clears figure, produces nothing in marimo
+def _(df, mo):
+    def _():
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        ax.scatter(df["mileage"], df["price"])
+        ax.set_xlabel("Mileage")
+        ax.set_ylabel("Price (£)")
+        plt.tight_layout()
+        return plt.gca()
+    mo.mpl.interactive(_())
     return
 ```
 
@@ -178,35 +212,21 @@ def _():
 
 # layout-and-composition
 
-RULE: Use `mo.hstack([...])` to display elements side by side.
-RULE: Use `mo.vstack([...])` to display elements stacked vertically.
-RULE: Use `mo.tabs({"Tab name": content, ...})` for tabbed layouts.
-RULE: Use `mo.accordion({"Section": content, ...})` for collapsible sections.
-RULE: Use `mo.callout(mo.md("..."), kind="warn")` for callout boxes — valid kinds: `neutral`, `danger`, `warn`, `success`, `info`.
-RULE: Never use raw HTML strings for layout — marimo's layout components handle all common cases.
-```python
-@app.cell
-def _(mo, fig1, fig2):
-    mo.hstack([fig1, fig2])            # side by side
-    return
-```
+RULE: Use `mo.hstack([...])` for side-by-side, `mo.vstack([...])` for vertical stacking.
+RULE: Use `mo.tabs({"Tab": content})` for tabbed layouts.
+RULE: Use `mo.callout(mo.md("..."), kind="warn")` for callouts — kinds: `neutral`, `danger`, `warn`, `success`, `info`.
+RULE: Never use raw HTML strings for layout.
 
 ---
 
 # markdown-and-text
 
-RULE: Use `mo.md("...")` for all markdown text output — not `print()` and not raw strings.
-RULE: Use f-strings inside `mo.md()` to interpolate Python values into markdown dynamically.
-RULE: To embed a marimo object (table, plot, UI element) inside markdown, use an f-string and marimo will render it correctly.
-RULE: For non-marimo objects embedded in markdown (e.g. matplotlib figures), wrap with `mo.as_html()` first.
+RULE: Use `mo.md("...")` for all text output.
+RULE: Use f-strings inside `mo.md()` to interpolate Python values.
 ```python
 @app.cell
 def _(df, mo):
-    mo.md(f"""
-    ## Summary
-
-    Dataset contains **{df.height:,} rows** and **{df.width} columns**.
-    """)
+    mo.md(f"Dataset contains **{df.height:,} rows** and **{df.width} columns**.")
     return
 ```
 
@@ -214,59 +234,38 @@ def _(df, mo):
 
 # ui-elements
 
-RULE: Assign UI elements to a global variable and include them as the last expression of a cell to display them.
-RULE: Never access a UI element's `.value` in the same cell where it is defined — the value is only available in downstream cells.
-RULE: UI element values are accessed via the `.value` attribute in downstream cells.
+RULE: Assign UI elements to a variable, display as last expression, return the variable.
+RULE: Never access `.value` in the same cell where the element is defined — only in downstream cells.
 ```python
 @app.cell
 def _(df, mo):
-    slider = mo.ui.slider.from_series(df["year"], label="Year")
-    slider                             # display the slider
-    return (slider,)
+    year_filter = mo.ui.slider.from_series(df["year"], label="Year")
+    year_filter
+    return (year_filter,)
 
 @app.cell
-def _(df, mo, slider):
-    filtered = df.filter(pl.col("year") == slider.value)  # access .value here
+def _(df, mo, pl, year_filter):
+    filtered = df.filter(pl.col("year") == year_filter.value)
     mo.ui.table(filtered)
     return (filtered,)
 ```
 
-**Available UI elements:**
-- `mo.ui.slider(start, stop)` — numeric slider
-- `mo.ui.dropdown(options)` — dropdown selector
-- `mo.ui.checkbox(label)` — checkbox
-- `mo.ui.text(label)` — text input
-- `mo.ui.text_area(label)` — multi-line text input
-- `mo.ui.date()` — date picker
-- `mo.ui.table(data)` — interactive table with selection
-- `mo.ui.dataframe(df)` — interactive dataframe transformer
-- `mo.ui.altair_chart(chart)` — reactive altair chart
-- `mo.ui.matplotlib(ax)` — reactive matplotlib plot
-- `mo.ui.plotly(fig)` — reactive plotly chart
-- `mo.ui.run_button(label)` — button that triggers downstream cells
+Common elements: `mo.ui.slider`, `mo.ui.dropdown`, `mo.ui.checkbox`, `mo.ui.text`,
+`mo.ui.table`, `mo.ui.dataframe`, `mo.ui.altair_chart`, `mo.ui.run_button`.
 
 ---
 
 # expensive-cells
 
-RULE: Use `@mo.cache` to cache the result of an expensive cell function — the result is reused on re-run if inputs have not changed.
-RULE: Use `mo.persistent_cache` to cache variables to disk across sessions.
-RULE: Use `mo.stop(condition, mo.md("message"))` to conditionally halt execution of a cell and all downstream cells.
-```python
-@app.cell
-@mo.cache
-def _(pl):
-    df = pl.read_parquet("data/raw/large_file.parquet")  # cached after first run
-    return (df,)
-```
+RULE: Use `@mo.cache` to cache expensive cell results across re-runs.
+RULE: Use `mo.stop(condition, mo.md("reason"))` to halt a cell and its dependents conditionally.
 
 ---
 
 # notebook-conventions
 
-RULE: One notebook, one question — do not let a notebook grow to answer multiple unrelated questions.
-RULE: All reusable logic belongs in `src/{{ package_name }}` — notebooks call `src/` functions, they do not reimplement them.
-RULE: Keep data loading cells isolated at the top of the notebook.
-RULE: Use descriptive cell function names instead of `_` when the cell has a clear purpose — e.g. `def load_raw_data_(pl):` — this makes the dependency graph readable.
-RULE: Use `hide_code=True` on `@app.cell` for cells whose output is the point and whose code is implementation detail: `@app.cell(hide_code=True)`.
-RULE: Exploratory notebooks can be rough — the standard rises when a notebook becomes a deliverable or is run as an app.
+RULE: One notebook, one question.
+RULE: All reusable logic belongs in `src/data_science_project` — notebooks call functions, they do not reimplement them.
+RULE: Keep data loading cells at the top.
+RULE: Use descriptive cell function names when the cell has a clear purpose — e.g. `def load_raw_data_(pl):`.
+RULE: Use `@app.cell(hide_code=True)` for cells where the output is the point.
