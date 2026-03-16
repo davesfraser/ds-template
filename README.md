@@ -54,6 +54,7 @@ Seven skills live in `.github/skills/` and load automatically based on the task 
 | `ds-evaluation` | Model metrics, SHAP, calibration, subgroup analysis |
 | `ds-visualisation` | Charts, figures, tables, colour, labelling |
 | `marimo` | Writing or editing `.py` notebook files |
+| `streamlit` | Creating streamlit web applications |
 
 You can also invoke any skill manually in Copilot Chat, for example `/ds-workflow` or `/ds-stats`.
 
