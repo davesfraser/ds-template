@@ -126,6 +126,7 @@ Optional groups are available when needed:
 | `vis-static` | matplotlib and seaborn |
 | `vis-interactive` | plotly |
 | `ml` | scikit-learn |
+| `app` | streamlit - for building and running the project as an app |
 
 Examples:
 ```bash
