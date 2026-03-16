@@ -1,21 +1,8 @@
 {
   "recommendations": [
-    // Core Python editing support
     "ms-python.python",
-
-    // Language server — autocomplete, hover, go-to-definition
     "ms-python.vscode-pylance",
-
-    // Linting and formatting — handles ruff check and ruff format
     "charliermarsh.ruff",
-
-    // Mypy type checking integration in the editor
-    // Shows mypy errors as squiggles without running mypy manually
     "matangover.mypy"
-
-    // ty is kept here as an optional extension if you want to experiment
-    // with it — uncomment when ty reaches stable and you have verified
-    // it handles your codebase cleanly
-    // "astral-sh.ty"
   ]
 }
