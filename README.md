@@ -93,6 +93,7 @@ cd my-new-project
 Set up the environment, install Git hooks, create the lockfile, and make the first commit.
 ```bash
 uv sync
+git init (may not be necessary)
 uv run pre-commit install
 git add .
 git add uv.lock

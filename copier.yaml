@@ -77,6 +77,7 @@ _message_after_copy: |
 
     cd <your-project-directory>
     uv sync
+    git init
     uv run pre-commit install
     git add .
     git add uv.lock
