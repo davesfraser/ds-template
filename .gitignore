@@ -11,6 +11,9 @@ __pycache__/
 .venv/
 venv/
 
+# Rendered template output (created by `just check`)
+.rendered/
+
 # Tool caches and local test artifacts
 # Safe to delete, should stay out of git
 .pytest_cache/
