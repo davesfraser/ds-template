@@ -194,6 +194,8 @@ Commit that file early and keep it in version control.
 
 Generated project CI assumes the lockfile is committed and uses `uv sync --frozen`.
 
+Dependabot is configured to open weekly PRs for uv dependency and GitHub Actions updates. Minor and patch updates are grouped into a single PR per ecosystem. CI validates each Dependabot PR automatically — just review and merge.
+
 Template maintenance CI is different on purpose: it renders a sample project and checks that the onboarding path still works.
 
 ## Maintainer notes
