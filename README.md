@@ -1,5 +1,11 @@
 # 2026 Python data science template
 
+[![CI](https://github.com/davesfraser/ds-template/actions/workflows/template-smoke.yaml/badge.svg)](https://github.com/davesfraser/ds-template/actions/workflows/template-smoke.yaml)
+[![Copier](https://img.shields.io/badge/copier-template-blue)](https://copier.readthedocs.io/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 A modern Python data science project template for practitioners who want to start quickly without ending up with a messy repo. It encourages reproducible analytics and ships with structured best-practice guidance that AI coding assistants load automatically — so generated code follows your project standards from day one.
 
 ## What this template is
