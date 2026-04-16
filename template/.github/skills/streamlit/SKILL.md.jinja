@@ -39,6 +39,18 @@ from {{ package_name }}.settings import settings
 
 ---
 
+# ui-folder
+
+RULE: Create a `ui/` directory at the repo root for all app presentation collateral.
+RULE: Place reusable UI rendering functions in `ui/` — e.g. `ui/components.py`, `ui/charts.py`. These are display helpers that depend on `streamlit` and are not suitable for `src/`.
+RULE: Place custom CSS files in `ui/` — e.g. `ui/style.css`. Load with `st.markdown` or `st.html`.
+RULE: Place custom JavaScript files in `ui/` — e.g. `ui/analytics.js`.
+RULE: Place logos, icons, and other static assets in `ui/assets/` — e.g. `ui/assets/logo.png`.
+RULE: `ui/` is for presentation only — business logic still belongs in `src/{{ package_name }}`.
+RULE: Functions in `ui/` may import `streamlit` — unlike `src/`, they are tied to the app runtime.
+
+---
+
 # multi-page-layout
 
 RULE: For multi-page apps, create a `pages/` directory at the repo root alongside `app.py`.
