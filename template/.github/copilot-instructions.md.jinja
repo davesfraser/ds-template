@@ -133,6 +133,32 @@ uv run ruff format .       # format
 
 ---
 
+# Linting and type checking
+
+This project uses ruff for linting and formatting, and mypy for type checking.
+Generated code must pass both without errors.
+
+Key ruff settings:
+- Line length: 100
+- Enabled rule sets: E4/E7/E9, F, I (isort), UP, B, SIM, C4, PIE, RUF, ANN, NPY, PD
+- `src/` functions must have type annotations on all arguments and return values (ANN enforced)
+- `tests/` are exempt from annotation rules (ANN suppressed)
+- `notebooks/` are exempt from ANN, F401 (unused imports), F821 (undefined names from cross-cell references), and F841 (unused variables)
+
+Key mypy settings:
+- `ignore_missing_imports = true` — DS libraries with missing stubs will not cause errors
+- `check_untyped_defs = true` — untyped functions are still checked internally
+- Strict mode is off — this is a data science project, not a library
+- mypy checks `src/` and `tests/` only — notebooks are not type-checked
+
+RULE: All code in `src/` must pass `ruff check` and `mypy` without errors.
+RULE: Do not add `# type: ignore` or `# noqa` comments unless there is a
+genuine false positive — fix the code instead.
+RULE: Do not add type annotations to marimo cell functions — they are
+suppressed in ruff config and not checked by mypy.
+
+---
+
 # Data science standards
 
 When given a business question or analytical goal, invoke `/ds-workflow`

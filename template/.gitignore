@@ -35,6 +35,7 @@ Thumbs.db
 # Often contain secrets or machine-specific config
 .env
 .env.*
+!.env.example
 
 # Data files
 # Keep binary data (aka non-code) out of git repo as much as possible

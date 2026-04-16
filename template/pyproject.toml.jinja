@@ -226,8 +226,10 @@ ignore = [
 "tests/**/*.py" = ["ANN"]
 
 # marimo files are exploratory / notebook-like.
-# Keep them clean, but don't force full production-style typing there
-"notebooks/**/*.py" = ["ANN", "F401", "F841"]
+# Keep them clean, but don't force full production-style typing there.
+# F821: marimo cells reference variables defined in other cells, which ruff
+#       sees as undefined names — suppress to avoid false positives
+"notebooks/**/*.py" = ["ANN", "F401", "F821", "F841"]
 
 # Re-exports in __init__.py are normal
 "__init__.py" = ["F401"]
@@ -250,14 +252,16 @@ docstring-code-format = true
 
 # type checking
 
-# ty (for when it comes stable)
+# ty — Astral's next-generation type checker (not active in this project).
+# This config stub is ready to use if you enable ty in the dev dependency
+# group above. Until then, mypy is the primary type checker.
+# If your editor auto-detects this section and shows ty warnings, you can
+# safely ignore them or disable the ty extension until you opt in.
 
 [tool.ty.src]
-# Type-check package code and tests
 include = ["src", "tests"]
 
 [tool.ty.terminal]
-# Cleaner terminal output
 output-format = "concise"
 
 #mypy
