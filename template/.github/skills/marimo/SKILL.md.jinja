@@ -288,3 +288,17 @@ RULE: All reusable logic belongs in `src/data_science_project` — notebooks cal
 RULE: Keep data loading cells at the top.
 RULE: Use descriptive cell function names when the cell has a clear purpose — e.g. `def load_raw_data_(pl):`.
 RULE: Use `@app.cell(hide_code=True)` for cells where the output is the point.
+
+---
+
+# linting-relaxations
+
+Marimo notebooks have relaxed linting rules compared to `src/` code.
+These are configured in `pyproject.toml` under `[tool.ruff.lint.per-file-ignores]`.
+
+RULE: Do not add type annotations to cell functions — ANN rules are suppressed for notebooks.
+RULE: Unused imports are allowed (F401 suppressed) — cells may import for downstream use or side effects.
+RULE: Cross-cell variable references are expected (F821 suppressed) — ruff cannot see marimo's reactive graph, so variables defined in one cell and used in another appear "undefined".
+RULE: Intermediate variables assigned for inspection are fine (F841 suppressed).
+RULE: mypy does not check notebooks — only `src/` and `tests/` are type-checked.
+RULE: Do not add `# noqa` comments to suppress these rules — they are already suppressed globally for `notebooks/**/*.py`.
