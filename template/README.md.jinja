@@ -132,3 +132,5 @@ This project expects `uv.lock` to be committed.
 The first `uv sync` creates it.
 
 CI uses the committed lockfile and runs with `--frozen`.
+
+Dependabot is configured to open weekly PRs for uv dependency and GitHub Actions updates. Minor and patch updates are grouped into a single PR per ecosystem. CI validates each Dependabot PR automatically — just review and merge.
