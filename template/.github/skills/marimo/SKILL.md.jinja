@@ -152,6 +152,24 @@ RULE: Do not use `print()` for outputs — appears in console only.
 RULE: Do not use `return` for display — return is for passing values downstream.
 RULE: To display multiple outputs, use `mo.vstack([...])` or `mo.hstack([...])`.
 RULE: To display output during a running loop, use `mo.output.append()`.
+RULE: When a cell uses an inner `def _():` purely for visual output, the cell
+must call `_()` as its last expression — otherwise the function is defined but
+never executed and the cell produces no output:
+```python
+# correct — _() is called, output is displayed
+@app.cell
+def _(mo):
+    def _():
+        return mo.md("## Summary")
+    _()    # this line is required for output
+
+# wrong — _() is never called, cell is silent
+@app.cell
+def _(mo):
+    def _():
+        return mo.md("## Summary")
+    # missing _() call — no output
+```
 
 ---
 
