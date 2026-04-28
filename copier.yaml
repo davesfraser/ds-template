@@ -27,6 +27,15 @@ package_name:
     {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$')) %}
     package_name must be snake_case — letters, numbers, and underscores only (e.g. my_ds_project)
     {% endif %}
+    {% if package_name in [
+      'False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await',
+      'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except',
+      'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is',
+      'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try',
+      'while', 'with', 'yield'
+    ] %}
+    package_name must not be a Python keyword
+    {% endif %}
 
 project_description:
   type: str
@@ -56,10 +65,9 @@ python_min_version:
   choices:
     - "3.12"
     - "3.13"
-    - "3.14"
   validator: >-
-    {% if not (python_min_version | regex_search('^3\\.\\d+$')) %}
-    python_min_version must look like 3.12, 3.13, or 3.14
+    {% if not (python_min_version | regex_search('^3\\.(12|13)$')) %}
+    python_min_version must be 3.12 or 3.13
     {% endif %}
 
 _exclude:

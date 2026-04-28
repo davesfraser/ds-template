@@ -1,4 +1,4 @@
-# ds-template — Copier template for data science projects
+# py-template — Base Copier template for Python projects
 
 This is a Copier template repository, not a runnable project.
 AI coding assistants working in this repo must follow the rules below.
@@ -17,7 +17,7 @@ Template variables (defined in `copier.yaml`):
 - `{{ package_name }}` — snake_case Python package name
 - `{{ project_description }}` — one-line description
 - `{{ author_name }}`, `{{ author_email }}`
-- `{{ python_min_version }}` — minimum Python version (3.12, 3.13, or 3.14)
+- `{{ python_min_version }}` — minimum Python version (3.12 or 3.13)
 
 ---
 

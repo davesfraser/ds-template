@@ -3,6 +3,7 @@ set windows-shell := ["powershell", "-NoProfile", "-Command"]
 
 # Rendered output directory — gitignored, throwaway
 rendered := ".rendered"
+copier_source := ".copier-source"
 
 # Render the template and run all checks against the output
 # This mirrors exactly what CI does
@@ -19,10 +20,11 @@ check: render
 # Useful for inspecting the rendered output directly
 # Usage: just render
 render:
-    uv run python -c "import shutil; shutil.rmtree('.rendered', ignore_errors=True)"
-    uvx copier copy . {{rendered}} --defaults --overwrite --vcs-ref HEAD --quiet
+    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
+    uvx copier copy {{copier_source}} {{rendered}} --defaults --overwrite --quiet
+    uv run python -c "from pathlib import Path; import shutil; p = Path('{{copier_source}}'); shutil.rmtree(p) if p.exists() else None"
 
 # Remove the rendered output directory
 # Usage: just clean
 clean:
-    uv run python -c "import shutil; shutil.rmtree('.rendered', ignore_errors=True)"
+    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]"

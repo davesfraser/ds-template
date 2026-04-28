@@ -2,7 +2,7 @@
 <!-- .github/copilot-instructions.md. All project conventions live in        -->
 <!-- AGENTS.md at the project root.                                           -->
 
-# ds-template
+# py-template
 
 All project conventions and AI assistant instructions are defined in
 `AGENTS.md` at the project root. See that file for the complete reference.

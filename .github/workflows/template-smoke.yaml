@@ -21,9 +21,6 @@ jobs:
         # Mirror the python_min_version choices in copier.yaml exactly
         # If you add or remove a version from copier.yaml, update this too
         python-version: ["3.12", "3.13"]
-        # 3.14 is excluded from CI until the scientific stack has
-        # reliable wheel coverage — see the copier.yaml help text
-        # Add it here when uv sync --all-groups passes cleanly on 3.14
 
     steps:
       - name: Checkout repository
@@ -43,7 +40,10 @@ jobs:
         # Pass the matrix Python version as the copier answer so the
         # rendered project's pyproject.toml reflects what we're testing
         run: |
-          uvx --from copier copier copy . rendered --defaults \
+          mkdir copier-source
+          cp copier.yaml copier-source/copier.yaml
+          cp -R template copier-source/template
+          uvx --from copier copier copy copier-source rendered --defaults \
             --data python_min_version=${{ matrix.python-version }} --trust
 
       - name: Create the rendered project's lockfile and install every group

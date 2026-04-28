@@ -13,6 +13,7 @@ venv/
 
 # Rendered template output (created by `just check`)
 .rendered/
+.copier-source/
 
 # Tool caches and local test artifacts
 # Safe to delete, should stay out of git
