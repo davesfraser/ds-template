@@ -38,6 +38,7 @@ jobs:
 
       - name: Install dependencies from committed lockfile
         run: uv sync --frozen
+        # project-template:extension:ci-install
 
       - name: Check formatting
         run: uv run ruff format --check .
@@ -53,3 +54,5 @@ jobs:
 
       - name: Build package
         run: uv build
+
+      # project-template:extension:ci-extra-checks

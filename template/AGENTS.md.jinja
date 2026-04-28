@@ -81,6 +81,7 @@ RULE: Do not add `# type: ignore` or `# noqa` comments unless there is a genuine
 # Extension points
 
 RULE: Put downstream-specific AI coding agent skills in `.github/skills/`.
+RULE: Each specialised skill must live at `.github/skills/<skill-name>/SKILL.md`.
 RULE: Put project documentation in `docs/` and design decisions in `docs/decisions/`.
 RULE: Put checked-in developer scripts in `scripts/`.
 RULE: Put small runnable examples in `examples/`.
@@ -88,6 +89,12 @@ RULE: Put shared test fixtures in `tests/fixtures/`.
 
 ---
 
-<!-- project-template:extension:start -->
-<!-- Downstream templates may add project-type-specific rules here. -->
-<!-- project-template:extension:end -->
+# Downstream rules
+
+Downstream templates should append specialised rules in this section.
+Keep the generic base rules above unless a downstream project has a clear
+reason to override them.
+
+<!-- project-template:extension:downstream-rules:start -->
+<!-- Add project-type-specific rules here. -->
+<!-- project-template:extension:downstream-rules:end -->

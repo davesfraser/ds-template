@@ -27,7 +27,10 @@ license = { file = "LICENSE" }
 
 # settings.py uses pydantic-settings for typed, auditable runtime configuration
 # This handles .env loading, environment variable overrides, and type coercion
-dependencies = ["pydantic-settings"]
+dependencies = [
+    "pydantic-settings",
+    # project-template:extension:project-dependencies
+]
 
 [dependency-groups]
 # Dev-only tools: linting, typing, tests, coverage, hooks
@@ -46,6 +49,7 @@ dev = [
     "pytest-cov",
     "pre-commit",
 ]
+# project-template:extension:dependency-groups
 
 [tool.uv]
 # Make default group behavior obvious
@@ -53,6 +57,7 @@ dev = [
 # Other groups stay opt-in so the starter doesn't become bloated by default
 # i.e. you'll need to explicitly tell uv to install them...
 default-groups = ["dev"]
+# project-template:extension:uv-default-groups
 
 [tool.hatch.build.targets.wheel]
 # Keep src imports honest and let CI catch packaging drift
@@ -67,7 +72,10 @@ packages = ["src/{{ package_name }}"]
 minversion = "8.0"
 
 # Keep tests at the repo root instead of mixing them into src/
-testpaths = ["tests"]
+testpaths = [
+    "tests",
+    # project-template:extension:pytest-testpaths
+]
 
 # Good defaults for CI and local runs:
 # -ra: show extra summary info
@@ -81,6 +89,7 @@ addopts = [
     "--strict-markers",
     "--cov={{ package_name }}",
     "--cov-report=term-missing:skip-covered",
+    # project-template:extension:pytest-addopts
 ]
 
 # If an expected-fail test suddenly passes, show it
@@ -116,6 +125,7 @@ src = ["src"]
 # Pin Ruff's behaviour to the project's chosen Python version so formatting
 # is identical regardless of which Python interpreter is actually running.
 target-version = "py{{ python_min_version | replace('.', '') }}"
+# project-template:extension:ruff-settings
 
 [tool.ruff.lint]
 # Keep preview off in a template unless you intentionally want unstable rules/fixes
@@ -135,6 +145,7 @@ select = [
     "C4",   # comprehensions
     "PIE",  # small correctness / cleanup wins
     "RUF",  # Ruff-native rules
+    # project-template:extension:ruff-select
     # ANN enforces type annotations on all function arguments and return values
     # in src/ — this is intentionally strict and reflects the template's view
     # that reusable code benefits from explicit types for readability and for
@@ -158,6 +169,7 @@ ignore = [
     "ANN401", # don't force removal of Any everywhere
     "PD008",  # allow .at
     "PD009",  # allow .iat
+    # project-template:extension:ruff-ignore
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -166,6 +178,7 @@ ignore = [
 
 # Re-exports in __init__.py are normal
 "__init__.py" = ["F401"]
+# project-template:extension:ruff-per-file-ignores
 
 [tool.ruff.lint.flake8-annotations]
 # Actually enforce annotation coverage
@@ -227,4 +240,5 @@ check_untyped_defs = true
 
 # Disallow calling untyped functions from typed ones
 disallow_untyped_calls = false
+# project-template:extension:mypy-settings
 

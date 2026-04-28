@@ -54,6 +54,8 @@ repos:
       # Runs after ruff-check so any auto-fixed imports also get formatted
       - id: ruff-format
 
+  # project-template:extension:pre-commit-hooks
+
   # mypy is run in CI rather than as a pre-commit hook
   # Running mypy before every commit adds several seconds to every commit
   # for errors that are caught in CI anyway
