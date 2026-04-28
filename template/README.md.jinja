@@ -53,11 +53,29 @@ uv build
 ```text
 src/{{ package_name }}/     reusable package code
 tests/                      pytest tests
+tests/fixtures/             shared test fixtures
+docs/                       project documentation
+docs/decisions/             design decision records
+examples/                   small runnable examples
+scripts/                    developer and maintenance scripts
+.github/skills/             project-specific AI coding agent skills
 .github/workflows/          GitHub Actions CI
 AGENTS.md                   AI assistant coding instructions
 pyproject.toml              project metadata and tool configuration
 uv.lock                     locked dependencies
 ```
+
+## Extension Points
+
+This project includes a few empty or documentation-only folders that downstream
+teams can build on without changing the base layout:
+
+- Put project documentation in `docs/`.
+- Record design decisions in `docs/decisions/`.
+- Add small runnable examples in `examples/`.
+- Add checked-in developer scripts in `scripts/`.
+- Add reusable test fixtures in `tests/fixtures/`.
+- Add real AI coding agent skills in `.github/skills/`.
 
 ## Dependencies
 

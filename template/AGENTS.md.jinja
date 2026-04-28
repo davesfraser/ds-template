@@ -34,6 +34,12 @@ RULE: keep IO separate from pure logic where practical
 ```text
 src/{{ package_name }}/     reusable project code
 tests/                      pytest tests
+tests/fixtures/             shared test fixtures
+docs/                       project documentation
+docs/decisions/             design decision records
+examples/                   small runnable examples
+scripts/                    developer and maintenance scripts
+.github/skills/             project-specific AI coding agent skills
 ```
 
 ---
@@ -69,6 +75,16 @@ Key mypy settings:
 
 RULE: All code in `src/` must pass `ruff check` and `mypy` without errors.
 RULE: Do not add `# type: ignore` or `# noqa` comments unless there is a genuine false positive — fix the code instead.
+
+---
+
+# Extension points
+
+RULE: Put downstream-specific AI coding agent skills in `.github/skills/`.
+RULE: Put project documentation in `docs/` and design decisions in `docs/decisions/`.
+RULE: Put checked-in developer scripts in `scripts/`.
+RULE: Put small runnable examples in `examples/`.
+RULE: Put shared test fixtures in `tests/fixtures/`.
 
 ---
 

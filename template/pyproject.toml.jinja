@@ -58,6 +58,10 @@ default-groups = ["dev"]
 # Keep src imports honest and let CI catch packaging drift
 packages = ["src/{{ package_name }}"]
 
+[tool.hatch.build.targets.wheel.force-include]
+# PEP 561 marker for packages that ship inline type information
+"src/{{ package_name }}/py.typed" = "{{ package_name }}/py.typed"
+
 [tool.pytest.ini_options]
 # Require a modern pytest
 minversion = "8.0"
