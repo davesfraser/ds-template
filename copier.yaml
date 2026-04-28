@@ -4,7 +4,7 @@ _subdirectory: template
 project_name:
   type: str
   help: What is the title of your project? (Human readable)
-  default: Data science project
+  default: Python project
   validator: >-
     {% if not (project_name | regex_search('^[A-Za-z0-9][A-Za-z0-9 _-]*$')) %}
     project_name should use letters, numbers, spaces, hyphens, or underscores only
@@ -31,7 +31,7 @@ package_name:
 project_description:
   type: str
   help: Provide a one line description for pyproject and README
-  default: Modern Python data science project
+  default: Modern Python project
 
 author_name:
   type: str
@@ -51,10 +51,7 @@ python_min_version:
   type: str
   help: >-
     Minimum Python version for your project
-    3.13 is the recommended default — it's the current stable release and
-    has full wheel support across the scientific stack
-    3.14 is available but some packages may not yet have pre-built wheels,
-    so `uv sync` could fall back to building from source or fail entirely
+    3.13 is the recommended default
   default: "3.13"
   choices:
     - "3.12"

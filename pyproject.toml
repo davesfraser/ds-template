@@ -4,8 +4,8 @@
 # at template/pyproject.toml.jinja.
 # This file exists so template developers can run `uv sync` and get all the
 # tools needed to work on and test the template itself.
-name = "ds-template"
-version = "0.4.1"
+name = "py`-template"
+version = "0.1.0"
 requires-python = ">=3.13"
 
 [dependency-groups]

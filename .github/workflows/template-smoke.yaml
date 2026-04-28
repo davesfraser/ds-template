@@ -64,11 +64,7 @@ jobs:
 
       - name: Lint
         working-directory: rendered
-        run: uv run ruff check src tests notebooks
-
-      - name: Check marimo notebooks
-        working-directory: rendered
-        run: uv run marimo check notebooks/marimo
+        run: uv run ruff check src tests
 
       - name: Type check
         working-directory: rendered

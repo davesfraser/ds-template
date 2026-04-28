@@ -9,11 +9,6 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
-      # DS projects often accidentally stage CSVs, Parquet files, or model
-      # binaries. This stops them before they bloat the repo history forever
-      - id: check-added-large-files
-        args: ["--maxkb=2000"]
-
       # Catches private keys and PEM blocks — important if your project
       # touches API keys, cloud credentials, or database passwords via .env
       - id: detect-private-key
@@ -54,7 +49,7 @@ repos:
       # rather than silently accepting machine edits
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
-        files: ^(src|tests|notebooks)/
+        files: ^(src|tests)/
 
       # Runs after ruff-check so any auto-fixed imports also get formatted
       - id: ruff-format

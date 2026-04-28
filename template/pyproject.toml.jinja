@@ -46,68 +46,13 @@ dev = [
     "pytest-cov",
     "pre-commit",
 ]
-# marimo is the notebook/app workflow for this template,
-# let's keep exploratory work Git-friendly and Python-native
-notebook = [
-    "marimo[lsp,recommended]",
-]
-
-# Core dataframe/array stack
-# This gives you polars + Arrow interoperability without forcing ML deps
-data = [
-    "numpy",
-    "polars",
-    "pyarrow",
-]
-
-data-pandas = [
-    "pandas",
-    "pandas-stubs",
-]
-
-# Classical statistics and hypothesis testing
-# SciPy provides scipy.stats tests, distributions, resampling
-# statsmodels provides verbose summaries and formula based modelling
-stats = [
-  "scipy",
-  "statsmodels",
-]
-
-# Runtime dataframe validation
-# pandera supports multiple dataframe libraries, including pandas and polars
-validation = [
-    "pandera[polars]",
-]
-
-# Static plotting / publication-style figures / EDA
-vis-static = [
-    "matplotlib",
-    "seaborn",
-]
-
-# Interactive plots for exploration, demos, and marimo apps
-vis-interactive = [
-    "plotly",
-]
-
-# Small, portable default ML group
-# scikit-learn is still the best baseline starter for many DS projects
-ml = [
-    "scikit-learn",
-]
-
-# Application front end development group
-# Streamlit is the best/easiest for interactive DS projects
-app = [
-    "streamlit",
-]
 
 [tool.uv]
 # Make default group behavior obvious
 # plain "uv sync" installs the base project + dev tools
 # Other groups stay opt-in so the starter doesn't become bloated by default
 # i.e. you'll need to explicitly tell uv to install them...
-default-groups = ["dev", "notebook", "data", "stats"]
+default-groups = ["dev"]
 
 [tool.hatch.build.targets.wheel]
 # Keep src imports honest and let CI catch packaging drift
@@ -168,14 +113,6 @@ src = ["src"]
 # is identical regardless of which Python interpreter is actually running.
 target-version = "py{{ python_min_version | replace('.', '') }}"
 
-# Ignore non-code artifact areas common in DS repos
-# This keeps Ruff focused on real source files
-extend-exclude = [
-    "data",
-    "models",
-    "reports",
-]
-
 [tool.ruff.lint]
 # Keep preview off in a template unless you intentionally want unstable rules/fixes
 preview = false
@@ -211,8 +148,6 @@ select = [
     #
     # Add whichever you want to the ignore list below
     "ANN",  # type annotation coverage
-    "NPY",  # NumPy-specific checks
-    "PD",   # pandas-vet rules
 ]
 
 ignore = [
