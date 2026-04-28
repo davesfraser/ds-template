@@ -13,6 +13,7 @@ uv sync
 uv run pre-commit install
 git add .
 git add uv.lock
+git add .copier-answers.yml
 git commit -m "Initial project setup"
 ```
 
@@ -98,6 +99,15 @@ uv add --dev pytest-mock
 
 If code in `src/` imports a package at runtime, that package belongs in base
 dependencies. If a package is only used for development, add it to the dev group.
+
+## Template Updates
+
+This project includes `.copier-answers.yml`, which records the answers used to
+render the project. Commit it so future `copier update` runs can apply template
+updates safely.
+
+Do not edit `.copier-answers.yml` manually. Re-run Copier commands when template
+answers need to change.
 
 ## Lockfile
 

@@ -21,8 +21,7 @@ check: render
 # Usage: just render
 render:
     uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
-    uvx copier copy {{copier_source}} {{rendered}} --defaults --overwrite --quiet
-    uv run python -c "from pathlib import Path; import shutil; p = Path('{{copier_source}}'); shutil.rmtree(p) if p.exists() else None"
+    $src = (Resolve-Path "{{copier_source}}").Path; uvx copier copy $src {{rendered}} --defaults --overwrite --quiet
 
 # Remove the rendered output directory
 # Usage: just clean

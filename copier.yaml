@@ -86,4 +86,8 @@ _message_after_copy: |
     uv run pre-commit install
     git add .
     git add uv.lock
+    git add .copier-answers.yml
     git commit -m "Initial project from template"
+
+  Commit `.copier-answers.yml` so future `copier update` runs can apply
+  template updates safely. Never edit that file manually.
