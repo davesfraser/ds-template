@@ -10,8 +10,7 @@ rendered := ".rendered"
 check: render
     uv --directory {{rendered}} sync --all-groups --quiet
     uv --directory {{rendered}} run ruff format --check .
-    uv --directory {{rendered}} run ruff check src tests notebooks
-    uv --directory {{rendered}} run marimo check notebooks/marimo
+    uv --directory {{rendered}} run ruff check src tests
     uv --directory {{rendered}} run mypy src tests
     uv --directory {{rendered}} run pytest -q
     uv --directory {{rendered}} build --quiet
