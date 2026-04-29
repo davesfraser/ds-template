@@ -8,13 +8,19 @@ copier_source := ".copier-source"
 # Render the template and run all checks against the output
 # This mirrors exactly what CI does
 # Usage: just check
-check: render
+check: check-extension-markers render
     uv --directory {{rendered}} sync --all-groups --quiet
+    uv --directory {{rendered}} sync --frozen --all-groups --quiet
     uv --directory {{rendered}} run ruff format --check .
-    uv --directory {{rendered}} run ruff check src tests
+    uv --directory {{rendered}} run ruff check src tests notebooks scripts
+    uv --directory {{rendered}} run marimo check notebooks/marimo
     uv --directory {{rendered}} run mypy src tests
     uv --directory {{rendered}} run pytest -q
     uv --directory {{rendered}} build --quiet
+
+# Verify downstream extension blocks are still present and well-formed
+check-extension-markers:
+    uv run python scripts/check_extension_markers.py
 
 # Render the template only, without running checks
 # Useful for inspecting the rendered output directly

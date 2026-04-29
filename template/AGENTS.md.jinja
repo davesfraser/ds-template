@@ -2,8 +2,19 @@
 
 {{ project_description }}
 
-This repository contains a modern Python project.
+This repository contains a reproducible data science analysis project.
 AI coding assistants must follow the rules in this document when generating code.
+
+Analytical standards are handled by skills in `.github/skills/`:
+
+- ds-workflow - workflow orchestration, invoke first for any analysis
+- ds-eda - exploratory data analysis
+- ds-stats - hypothesis testing and statistical analysis
+- ds-modelling - feature engineering, pipelines, and model building
+- ds-evaluation - model evaluation and diagnostics
+- ds-visualisation - charts, figures, and reporting
+- marimo - notebook structure and reactive execution
+- streamlit - app structure and deployment
 
 ---
 
@@ -16,12 +27,17 @@ RULE: run ruff, mypy and pytest
 RULE: do not hardcode secrets
 RULE: prefer typed, small, testable functions
 RULE: keep IO separate from pure logic where practical
+RULE: notebooks are for exploration only; reusable logic lives in `src/`
+RULE: all filesystem paths must be imported from `{{ package_name }}.paths`
+RULE: all configuration values must be imported from `{{ package_name }}.settings`
 
 ---
 
 # Project stack
 
 - Python {{ python_min_version }}+
+- polars for dataframe operations
+- marimo for notebooks
 - uv for package and environment management
 - ruff for linting and formatting
 - mypy for type checking
@@ -35,6 +51,13 @@ RULE: keep IO separate from pure logic where practical
 src/{{ package_name }}/     reusable project code
 tests/                      pytest tests
 tests/fixtures/             shared test fixtures
+notebooks/marimo/           exploratory notebook-style work
+data/raw/                   source data, read only
+data/interim/               intermediate data
+data/processed/             final datasets
+data/external/              third-party or downloaded data
+models/                     serialised model artefacts
+reports/figures/            generated plots
 docs/                       project documentation
 docs/decisions/             design decision records
 examples/                   small runnable examples
@@ -55,6 +78,13 @@ uv run ruff check .        # lint
 uv run ruff format .       # format
 ```
 
+<!-- project-template:extension:agent-commands:start -->
+```bash
+uv run marimo check notebooks/marimo
+uv run marimo edit notebooks/marimo/01_exploration.py
+```
+<!-- project-template:extension:agent-commands:end -->
+
 ---
 
 # Linting and type checking
@@ -65,16 +95,22 @@ Generated code must pass both without errors.
 Key ruff settings:
 
 - Line length: 100
-- Enabled rule sets: E4/E7/E9, F, I, UP, B, SIM, C4, PIE, RUF, ANN
+- Enabled rule sets: E4/E7/E9, F, I, UP, B, SIM, C4, PIE, RUF, ANN, NPY, PD
 - `src/` functions must have type annotations on all arguments and return values
 - `tests/` are exempt from annotation rules if configured that way in pyproject
+- `notebooks/` are exempt from ANN and common notebook false positives
 
 Key mypy settings:
 
-- `check_untyped_defs = true` — untyped functions are still checked internally
+- `check_untyped_defs = true` - untyped functions are still checked internally
+- `ignore_missing_imports = true` - DS libraries with missing stubs will not cause errors
 
 RULE: All code in `src/` must pass `ruff check` and `mypy` without errors.
-RULE: Do not add `# type: ignore` or `# noqa` comments unless there is a genuine false positive — fix the code instead.
+RULE: Do not add `# type: ignore` or `# noqa` comments unless there is a genuine false positive - fix the code instead.
+
+<!-- project-template:extension:agent-linting:start -->
+RULE: Do not add type annotations to marimo cell functions; notebooks are not type-checked.
+<!-- project-template:extension:agent-linting:end -->
 
 ---
 
@@ -96,5 +132,19 @@ Keep the generic base rules above unless a downstream project has a clear
 reason to override them.
 
 <!-- project-template:extension:downstream-rules:start -->
-<!-- Add project-type-specific rules here. -->
+RULE: When given a business question or analytical goal, invoke the ds-workflow
+skill before generating code.
+RULE: For every stage that produces a notebook, the marimo skill applies.
+RULE: For every stage that produces figures, the ds-visualisation skill applies
+and all mandatory figures must be saved to `FIGURES_DIR`.
+RULE: Every analytical task must produce reusable functions in `src/` organised
+by responsibility.
+RULE: Every analytical task must produce pytest tests covering reusable `src/`
+functions.
+RULE: Scripts orchestrate pipelines by calling `src/` functions; they do not
+implement analytical logic directly.
+RULE: All dataframe operations should use Polars. Pandas may be used only when
+required by an external library, and conversions should happen at the call site.
+RULE: Reports are named `YYYY-MM-DD_<activity>.md`.
+RULE: Figures are named `<subject>_<chart_type>.png`.
 <!-- project-template:extension:downstream-rules:end -->

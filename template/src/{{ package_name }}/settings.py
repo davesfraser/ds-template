@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     )
 
     environment: str = Field(default="development")
+    # project-template:extension:settings-fields:start
+    alpha: float = Field(default=0.05)
+    min_sample_size: int = Field(default=30)
+    random_seed: int = Field(default=42)
+    # project-template:extension:settings-fields:end
 
 
 settings = Settings()

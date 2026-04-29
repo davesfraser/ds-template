@@ -6,6 +6,13 @@
 
 {{ project_description }}
 
+## What This Project Assumes
+
+This project is set up for code-first data science work.
+
+Use `src/` for reusable project code and `notebooks/marimo/` for exploratory
+analysis.
+
 ## First Steps
 
 ```bash
@@ -17,7 +24,16 @@ git add .copier-answers.yml
 git commit -m "Initial project setup"
 ```
 
+Open the project in VS Code after that:
+
+```bash
+code .
+```
+
 ## Common Commands
+
+<!-- project-template:extension:readme-common-commands-before:start -->
+<!-- project-template:extension:readme-common-commands-before:end -->
 
 Format code:
 
@@ -28,7 +44,13 @@ uv run ruff format .
 Lint:
 
 ```bash
-uv run ruff check src tests
+uv run ruff check src tests notebooks scripts
+```
+
+Check marimo notebooks:
+
+```bash
+uv run marimo check notebooks/marimo
 ```
 
 Type check:
@@ -49,12 +71,25 @@ Build the package:
 uv build
 ```
 
+<!-- project-template:extension:readme-common-commands-after:start -->
+Open the starter notebook:
+
+```bash
+uv run marimo edit notebooks/marimo/01_exploration.py
+```
+
+<!-- project-template:extension:readme-common-commands-after:end -->
+
 ## Project Layout
 
 ```text
 src/{{ package_name }}/     reusable package code
 tests/                      pytest tests
 tests/fixtures/             shared test fixtures
+notebooks/marimo/           exploratory notebook-style work
+data/                       raw, interim, processed, external data
+models/                     model artefacts
+reports/figures/            generated figures
 docs/                       project documentation
 docs/decisions/             design decision records
 examples/                   small runnable examples
@@ -83,8 +118,45 @@ AI assistant rules for their domain. Keep reusable project code in `src/` and
 document any domain-specific workflow here.
 
 <!-- project-template:extension:readme-domain:start -->
-<!-- Add specialised template guidance here. -->
+## Dependency Groups
+
+By default, `uv sync` installs:
+
+- base dependencies
+- `dev`
+- `notebook`
+- `data`
+- `stats`
+
+Optional groups are available when needed:
+
+- `validation`
+- `vis-static`
+- `vis-interactive`
+- `ml`
+- `app`
+
+Examples:
+
+```bash
+uv sync --group validation
+uv sync --group vis-static --group vis-interactive
+uv sync --group ml
+uv sync --all-groups
+```
+
 <!-- project-template:extension:readme-domain:end -->
+
+## Customising This Project
+
+Prefer adding project-specific code and documentation in `src/`, `tests/`,
+`docs/`, `examples/`, and `scripts/`. For domain workflow notes, extend the
+marked sections in this README and `AGENTS.md` when your template provides
+them.
+
+Generated projects can customise their own files, but future `copier update`
+runs are easiest when template-owned structure stays close to the original
+layout and project-specific additions live in the extension areas.
 
 ## Dependencies
 
@@ -93,12 +165,15 @@ Use `uv add` to keep project metadata and the lockfile in sync.
 Examples:
 
 ```bash
-uv add requests
-uv add --dev pytest-mock
+uv add duckdb
+uv add --dev mypy
+uv add --group vis-static matplotlib seaborn
+uv add --group ml xgboost
 ```
 
 If code in `src/` imports a package at runtime, that package belongs in base
-dependencies. If a package is only used for development, add it to the dev group.
+dependencies. If a dependency is only for a particular optional workflow, put
+it in a named group.
 
 ## Template Updates
 
@@ -109,12 +184,35 @@ updates safely.
 Do not edit `.copier-answers.yml` manually. Re-run Copier commands when template
 answers need to change.
 
+Update from `ds-template`, not directly from `py-template`. Base template
+improvements flow into `ds-template` first, then into generated projects through
+Copier.
+
+Recommended update process:
+
+```bash
+git status
+copier update
+uv sync
+uv run pre-commit run --all-files
+uv run pytest -q
+git add .
+git add uv.lock
+git add .copier-answers.yml
+git commit -m "Update project from ds-template"
+```
+
+Commit or stash local work before running `copier update`. If Copier reports
+conflicts, resolve them like normal Git conflicts and keep project-specific work
+unless the incoming template change is clearly a shared tooling or structure
+fix.
+
 ## Lockfile
 
 This project expects `uv.lock` to be committed.
 
 The first `uv sync` creates it. CI installs from the committed lockfile with
-`uv sync --frozen`.
+`uv sync --frozen --all-groups`.
 
 Dependabot is configured to open weekly PRs for uv dependency and GitHub Actions
 updates. CI validates each Dependabot PR automatically.

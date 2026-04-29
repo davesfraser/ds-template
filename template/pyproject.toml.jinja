@@ -29,7 +29,8 @@ license = { file = "LICENSE" }
 # This handles .env loading, environment variable overrides, and type coercion
 dependencies = [
     "pydantic-settings",
-    # project-template:extension:project-dependencies
+    # project-template:extension:project-dependencies:start
+    # project-template:extension:project-dependencies:end
 ]
 
 [dependency-groups]
@@ -49,15 +50,57 @@ dev = [
     "pytest-cov",
     "pre-commit",
 ]
-# project-template:extension:dependency-groups
+# project-template:extension:dependency-groups:start
+notebook = [
+    "marimo[lsp,recommended]",
+]
+
+data = [
+    "numpy",
+    "polars",
+    "pyarrow",
+]
+
+data-pandas = [
+    "pandas",
+    "pandas-stubs",
+]
+
+stats = [
+    "scipy",
+    "statsmodels",
+]
+
+validation = [
+    "pandera[polars]",
+]
+
+vis-static = [
+    "matplotlib",
+    "seaborn",
+]
+
+vis-interactive = [
+    "plotly",
+]
+
+ml = [
+    "scikit-learn",
+]
+
+app = [
+    "streamlit",
+]
+# project-template:extension:dependency-groups:end
 
 [tool.uv]
 # Make default group behavior obvious
 # plain "uv sync" installs the base project + dev tools
 # Other groups stay opt-in so the starter doesn't become bloated by default
 # i.e. you'll need to explicitly tell uv to install them...
-default-groups = ["dev"]
-# project-template:extension:uv-default-groups
+default-groups = ["dev", "notebook", "data", "stats"]
+# project-template:extension:uv-default-groups:start
+# project-template:extension:uv-default-groups:end
 
 [tool.hatch.build.targets.wheel]
 # Keep src imports honest and let CI catch packaging drift
@@ -74,7 +117,8 @@ minversion = "8.0"
 # Keep tests at the repo root instead of mixing them into src/
 testpaths = [
     "tests",
-    # project-template:extension:pytest-testpaths
+    # project-template:extension:pytest-testpaths:start
+    # project-template:extension:pytest-testpaths:end
 ]
 
 # Good defaults for CI and local runs:
@@ -89,7 +133,8 @@ addopts = [
     "--strict-markers",
     "--cov={{ package_name }}",
     "--cov-report=term-missing:skip-covered",
-    # project-template:extension:pytest-addopts
+    # project-template:extension:pytest-addopts:start
+    # project-template:extension:pytest-addopts:end
 ]
 
 # If an expected-fail test suddenly passes, show it
@@ -125,7 +170,13 @@ src = ["src"]
 # Pin Ruff's behaviour to the project's chosen Python version so formatting
 # is identical regardless of which Python interpreter is actually running.
 target-version = "py{{ python_min_version | replace('.', '') }}"
-# project-template:extension:ruff-settings
+# project-template:extension:ruff-settings:start
+extend-exclude = [
+    "data",
+    "models",
+    "reports",
+]
+# project-template:extension:ruff-settings:end
 
 [tool.ruff.lint]
 # Keep preview off in a template unless you intentionally want unstable rules/fixes
@@ -145,7 +196,10 @@ select = [
     "C4",   # comprehensions
     "PIE",  # small correctness / cleanup wins
     "RUF",  # Ruff-native rules
-    # project-template:extension:ruff-select
+    # project-template:extension:ruff-select:start
+    "NPY",  # NumPy-specific checks
+    "PD",   # pandas-vet rules
+    # project-template:extension:ruff-select:end
     # ANN enforces type annotations on all function arguments and return values
     # in src/ — this is intentionally strict and reflects the template's view
     # that reusable code benefits from explicit types for readability and for
@@ -169,7 +223,8 @@ ignore = [
     "ANN401", # don't force removal of Any everywhere
     "PD008",  # allow .at
     "PD009",  # allow .iat
-    # project-template:extension:ruff-ignore
+    # project-template:extension:ruff-ignore:start
+    # project-template:extension:ruff-ignore:end
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -178,7 +233,9 @@ ignore = [
 
 # Re-exports in __init__.py are normal
 "__init__.py" = ["F401"]
-# project-template:extension:ruff-per-file-ignores
+# project-template:extension:ruff-per-file-ignores:start
+"notebooks/**/*.py" = ["ANN", "F401", "F821", "F841"]
+# project-template:extension:ruff-per-file-ignores:end
 
 [tool.ruff.lint.flake8-annotations]
 # Actually enforce annotation coverage
@@ -240,5 +297,6 @@ check_untyped_defs = true
 
 # Disallow calling untyped functions from typed ones
 disallow_untyped_calls = false
-# project-template:extension:mypy-settings
+# project-template:extension:mypy-settings:start
+# project-template:extension:mypy-settings:end
 

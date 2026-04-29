@@ -42,6 +42,52 @@ Use the `project-template:extension:*` comments as stable patch anchors. They
 are not a custom templating system; they are human-readable seams that make
 future syncs less fragile.
 
+Prefer paired blocks:
+
+```text
+project-template:extension:<name>:start
+downstream-owned content goes here
+project-template:extension:<name>:end
+```
+
+When syncing from `py-template`, keep base-owned content outside those blocks
+as close to upstream as possible. Put downstream additions inside the relevant
+blocks or in clearly downstream-owned files and folders.
+
+## Downstream Maintainer Notes
+
+Each downstream template should keep a small `UPSTREAM.md` or maintainer note
+with this shape:
+
+```markdown
+# Upstream Base
+
+- Upstream repository: davesfraser/py-template
+- Upstream ref: <tag-or-commit>
+- Last sync date: <yyyy-mm-dd>
+
+## Downstream-Owned Overlay
+
+- Dependency groups:
+- Generated folders:
+- Package additions:
+- README/AGENTS sections:
+- CI/pre-commit additions:
+- Skills/examples/scripts:
+
+## Extension Blocks Used
+
+- project-template:extension:<name>
+
+## Validation
+
+- just check
+- rendered-project domain checks
+```
+
+This file is maintainer-facing. It does not need to be copied into generated
+projects unless the downstream template intentionally wants users to see it.
+
 ## Release And Sync Checklist
 
 Before rebuilding or updating a downstream template:
@@ -59,23 +105,33 @@ defaults as downstream-facing changes and mention them in release notes.
 
 ## Extension Marker Inventory
 
-Current stable anchors:
+Current stable anchors are paired `:start` / `:end` blocks:
 
-- `project-template:extension:project-dependencies` — add runtime dependencies.
-- `project-template:extension:dependency-groups` — add optional dependency groups.
-- `project-template:extension:uv-default-groups` — adjust default installed groups.
-- `project-template:extension:pytest-testpaths` — add test directories.
-- `project-template:extension:pytest-addopts` — add pytest flags.
-- `project-template:extension:ruff-settings` — add top-level Ruff settings.
-- `project-template:extension:ruff-select` — add Ruff rule families.
-- `project-template:extension:ruff-ignore` — add ignored Ruff rules.
-- `project-template:extension:ruff-per-file-ignores` — add file-specific lint policy.
-- `project-template:extension:mypy-settings` — add mypy settings or overrides.
-- `project-template:extension:ci-install` — adjust CI dependency installation.
-- `project-template:extension:ci-extra-checks` — add CI quality steps.
-- `project-template:extension:pre-commit-hooks` — add local commit hooks.
-- `project-template:extension:downstream-rules` — add AGENTS rules.
-- `project-template:extension:readme-domain` — add generated README guidance.
+- `project-template:extension:project-dependencies` - add runtime dependencies.
+- `project-template:extension:dependency-groups` - add optional dependency groups.
+- `project-template:extension:uv-default-groups` - adjust default installed groups.
+- `project-template:extension:pytest-testpaths` - add test directories.
+- `project-template:extension:pytest-addopts` - add pytest flags.
+- `project-template:extension:ruff-settings` - add top-level Ruff settings.
+- `project-template:extension:ruff-select` - add Ruff rule families.
+- `project-template:extension:ruff-ignore` - add ignored Ruff rules.
+- `project-template:extension:ruff-per-file-ignores` - add file-specific lint policy.
+- `project-template:extension:mypy-settings` - add mypy settings or overrides.
+- `project-template:extension:ci-install` - adjust CI dependency installation.
+- `project-template:extension:ci-extra-checks` - add CI quality steps.
+- `project-template:extension:pre-commit-hooks` - add local commit hooks.
+- `project-template:extension:path-constants` - add package-level path constants.
+- `project-template:extension:settings-fields` - add settings fields.
+- `project-template:extension:smoke-tests` - add template smoke tests.
+- `project-template:extension:agent-commands` - add AGENTS command guidance.
+- `project-template:extension:agent-linting` - add AGENTS linting/type guidance.
+- `project-template:extension:downstream-rules` - add AGENTS rules.
+- `project-template:extension:readme-common-commands-before` - add README commands before base checks.
+- `project-template:extension:readme-common-commands-after` - add README commands after base checks.
+- `project-template:extension:readme-domain` - add generated README guidance.
+
+`just check` runs `scripts/check_extension_markers.py` so accidental marker
+removal or malformed block ordering fails before rendering.
 
 ## First Downstream: ds-template
 

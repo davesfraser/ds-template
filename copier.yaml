@@ -4,7 +4,7 @@ _subdirectory: template
 project_name:
   type: str
   help: What is the title of your project? (Human readable)
-  default: Python project
+  default: Data science project
   validator: >-
     {% if not (project_name | regex_search('^[A-Za-z0-9][A-Za-z0-9 _-]*$')) %}
     project_name should use letters, numbers, spaces, hyphens, or underscores only
@@ -40,7 +40,7 @@ package_name:
 project_description:
   type: str
   help: Provide a one line description for pyproject and README
-  default: Modern Python project
+  default: Modern Python data science project
 
 author_name:
   type: str
