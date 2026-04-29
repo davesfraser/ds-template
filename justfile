@@ -26,8 +26,8 @@ check-extension-markers:
 # Useful for inspecting the rendered output directly
 # Usage: just render
 render:
-    $env:VIRTUAL_ENV = $null; uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
-    $env:VIRTUAL_ENV = $null; $src = (Resolve-Path "{{copier_source}}").Path; uvx copier copy $src {{rendered}} --defaults --overwrite --quiet
+    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
+    uv run python scripts/render_template.py {{copier_source}} {{rendered}}
 
 # Remove the rendered output directory
 # Usage: just clean

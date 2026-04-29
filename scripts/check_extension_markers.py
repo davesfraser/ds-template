@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_EXTENSION_BLOCKS = {
     "template/AGENTS.md.jinja": [
+        "priority-rules",
         "agent-commands",
         "agent-linting",
         "downstream-rules",
@@ -51,9 +51,22 @@ def marker(name: str, edge: str) -> str:
     return f"project-template:extension:{name}:{edge}"
 
 
-def check_file(relative_path: str, block_names: list[str]) -> list[str]:
+def resolve_marker_path(relative_path: str) -> Path | None:
+    """Return the template source path for a marker inventory entry."""
     path = ROOT / relative_path
-    if not path.exists():
+    if path.exists():
+        return path
+
+    jinja_path = ROOT / f"{relative_path}.jinja"
+    if jinja_path.exists():
+        return jinja_path
+
+    return None
+
+
+def check_file(relative_path: str, block_names: list[str]) -> list[str]:
+    path = resolve_marker_path(relative_path)
+    if path is None:
         return [f"{relative_path}: missing file"]
 
     text = path.read_text(encoding="utf-8")

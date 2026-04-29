@@ -123,6 +123,7 @@ Current stable anchors are paired `:start` / `:end` blocks:
 - `project-template:extension:path-constants` - add package-level path constants.
 - `project-template:extension:settings-fields` - add settings fields.
 - `project-template:extension:smoke-tests` - add template smoke tests.
+- `project-template:extension:priority-rules` - add high-priority downstream AGENTS rules near the top.
 - `project-template:extension:agent-commands` - add AGENTS command guidance.
 - `project-template:extension:agent-linting` - add AGENTS linting/type guidance.
 - `project-template:extension:downstream-rules` - add AGENTS rules.
