@@ -51,7 +51,7 @@ template/data/external/*
 
 # Keep the folder structure in the repo
 # .gitkeep lets empty folders exist in git
-!data/raw/.gitkeep
+!template/data/raw/.gitkeep
 !template/data/interim/.gitkeep
 !template/data/processed/.gitkeep
 !template/data/external/.gitkeep

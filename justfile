@@ -9,27 +9,27 @@ copier_source := ".copier-source"
 # This mirrors exactly what CI does
 # Usage: just check
 check: check-extension-markers render
-    uv --directory {{rendered}} sync --all-groups --quiet
-    uv --directory {{rendered}} sync --frozen --all-groups --quiet
-    uv --directory {{rendered}} run ruff format --check .
-    uv --directory {{rendered}} run ruff check src tests notebooks scripts
-    uv --directory {{rendered}} run marimo check notebooks/marimo
-    uv --directory {{rendered}} run mypy src tests
-    uv --directory {{rendered}} run pytest -q
-    uv --directory {{rendered}} build --quiet
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} sync --all-groups --quiet
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} sync --frozen --all-groups --quiet
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} run ruff format --check .
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} run ruff check src tests notebooks scripts
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} run marimo check notebooks/marimo
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} run mypy src tests
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} run pytest -q
+    $env:VIRTUAL_ENV = $null; uv --directory {{rendered}} build --quiet
 
 # Verify downstream extension blocks are still present and well-formed
 check-extension-markers:
-    uv run python scripts/check_extension_markers.py
+    $env:VIRTUAL_ENV = $null; uv run python scripts/check_extension_markers.py
 
 # Render the template only, without running checks
 # Useful for inspecting the rendered output directly
 # Usage: just render
 render:
-    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
-    $src = (Resolve-Path "{{copier_source}}").Path; uvx copier copy $src {{rendered}} --defaults --overwrite --quiet
+    $env:VIRTUAL_ENV = $null; uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
+    $env:VIRTUAL_ENV = $null; $src = (Resolve-Path "{{copier_source}}").Path; uvx copier copy $src {{rendered}} --defaults --overwrite --quiet
 
 # Remove the rendered output directory
 # Usage: just clean
 clean:
-    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]"
+    $env:VIRTUAL_ENV = $null; uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]"
