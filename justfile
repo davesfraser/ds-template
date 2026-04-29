@@ -26,8 +26,13 @@ check-extension-markers:
 # Useful for inspecting the rendered output directly
 # Usage: just render
 render:
+<<<<<<< HEAD
     $env:VIRTUAL_ENV = $null; uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
     $env:VIRTUAL_ENV = $null; $src = (Resolve-Path "{{copier_source}}").Path; uvx copier copy $src {{rendered}} --defaults --overwrite --quiet
+=======
+    uv run python -c "from pathlib import Path; import shutil; [shutil.rmtree(p) for p in (Path('{{rendered}}'), Path('{{copier_source}}')) if p.exists()]; s = Path('{{copier_source}}'); s.mkdir(); shutil.copy2('copier.yaml', s / 'copier.yaml'); shutil.copytree('template', s / 'template')"
+    uv run python scripts/render_template.py {{copier_source}} {{rendered}}
+>>>>>>> fe0a698 (Addressing review feedback, agents.md project marker at top to get priority, justfile now supports linux as well as windows.)
 
 # Remove the rendered output directory
 # Usage: just clean
