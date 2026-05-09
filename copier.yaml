@@ -56,6 +56,18 @@ author_email:
     author_email must be a valid email address (e.g. you@example.com)
     {% endif %}
 
+project_scope:
+  type: str
+  help: >-
+    Will this project's code be deployed, scheduled, maintained, or consumed
+    by other systems after delivery? Choose 'production'. If the deliverable
+    is findings, a report, or a recommendation (including any modelling
+    technique), choose 'analysis'.
+  choices:
+    "Analysis — the deliverable is findings or a recommendation": analysis
+    "Production — the deliverable is running, maintained code": production
+  default: analysis
+
 python_min_version:
   type: str
   help: >-

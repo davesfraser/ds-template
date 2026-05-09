@@ -16,34 +16,40 @@ user-invocable: true
 
 # plan-first
 
-RULE: Before writing any notebook code, produce a cell dependency plan as a
-comment block:
+RULE: Before writing any notebook code, produce a variable ownership
+declaration as a comment block. List every global variable name that will be
+returned by any cell, grouped by the cell that owns it. Marimo treats variable
+redefinition as a hard error — a name may appear in only one cell's return
+tuple across the entire notebook. Declaring ownership upfront surfaces
+conflicts before any code is written.
+
 ```
-# Cell plan:
-# cell 1: imports           params ()           returns (mo, pl)
-# cell 2: load_raw_data     params (pl)         returns (df_raw,)
-# cell 3: display_schema    params (mo, df_raw) returns ()
-# cell 4: clean_data        params (df_raw)     returns (df_clean,)
+# Variable ownership:
+# imports:        mo, pl, Path
+# load_data:      df_raw
+# clean:          df_clean
+# summarise:      summary_stats
+# chart:          (display only — no exports)
 ```
 
-RULE: Every variable that appears in a cell's parameter list must be returned
-by exactly one upstream cell — verify this in the plan before writing any code.
-RULE: No variable name may appear in more than one cell's return tuple.
-RULE: Generate cells that exactly match the plan.
+RULE: Check the declaration for duplicate variable names before writing any cell.
+RULE: Every variable that appears in a cell's parameter list must be present in
+the ownership declaration above that cell.
+RULE: No variable name may appear under more than one cell in the declaration.
 
 ---
 
 # ai-assistant-quick-summary
 
-- Plan the cell dependency graph before writing any code
+- Before writing any cell, produce a variable ownership declaration: list every global variable grouped by the cell that returns it — marimo treats redefinition as a hard error, so duplicates cause load failures
 - Every global variable must be defined in exactly one cell
 - Cell parameters = variables needed from upstream; return tuple = variables exported downstream
 - The last expression of a cell is its visual output — not a return statement
-- Never use `plt.show()` — return `fig` from the inner `def _():` as the last expression
+- Never use `plt.show()` — inside the inner `def _():`, `return fig`; then call `_()` as the cell's last expression to display it
 - Never use `mo.mpl.interactive()` — it has known rendering bugs across platforms
 - Never write raw HTML strings — use marimo's built-in components
 - Never mutate a variable defined in another cell — use a new variable name
-- For cells with mostly throwaway variables, wrap the body in `def _():` and call it as the last expression with `return _()`
+- For cells with mostly throwaway variables, wrap the body in `def _():`, then call `_()` as the last expression before `return`
 - Only prefix with `_` when mixing one or two locals with exported variables
 - `print()` appears in the console, not the cell output area
 
@@ -101,7 +107,7 @@ def _(df):
 throwaway — plots, statistical summaries, temporary subsets. Variables inside
 the function are fully local and common names like `fig`, `ax`, `result`,
 `stats` can be reused freely across multiple cells without conflict.
-Call the function as the last expression with `return _()`:
+Call the function as the last expression before `return`:
 ```python
 @app.cell
 def _(df):
@@ -112,7 +118,8 @@ def _(df):
         ax.set_xlabel("Price (£)")
         plt.tight_layout()
         return fig
-    return _()                          # call and return — displays the figure
+    _()                                 # last expression — displays the figure
+    return                              # nothing exported; fig stays fully local
 ```
 
 **ANTI-PATTERN — parameter missing from signature:**
@@ -177,8 +184,17 @@ def _(mo):
 
 RULE: Return as a tuple — even for a single value: `return (df,)` not `return df`.
 RULE: Variables not returned are invisible to all other cells.
-RULE: When using an inner `def _():`, call it and return the result:
-`return _()` — this is both the display expression and the cell return.
+RULE: When using an inner `def _():` for display only, call it as the last
+expression and follow with a bare `return`:
+```python
+    _()      # last expression — displays the result
+    return   # nothing exported
+```
+To also export the result to downstream cells, capture it first:
+```python
+    result = _()
+    return (result,)
+```
 
 ---
 
@@ -201,7 +217,9 @@ RULE: Always return `fig` from the inner function — never `plt.gca()` or
 `plt.gcf()`. `plt.gca()` returns only the last active axes and fails for
 multi-axes figures.
 RULE: Never call `plt.show()` — it clears the figure and produces no output.
-RULE: Call the inner function as the last expression: `return _()`.
+RULE: Call the inner function as the last expression: `_()`. Follow with a
+bare `return` for display-only cells, or `return (fig,)` to export the figure
+to downstream cells (rare — most plot cells are display-only).
 RULE: Call `plt.tight_layout()` inside the inner function before returning.
 RULE: For plotly / altair — return the figure object directly as the last
 expression, no inner function needed.
@@ -217,7 +235,8 @@ def _(df):
         ax.set_xlabel("Price (£)")
         plt.tight_layout()
         return fig              # always return fig, not plt.gca()
-    return _()
+    _()                         # last expression — displays the figure
+    return
 
 # correct — multiple axes
 @app.cell
@@ -229,7 +248,8 @@ def _(df):
         axes[1].hist(df["mileage"], bins=30)
         plt.tight_layout()
         return fig              # must return fig for multi-axes
-    return _()
+    _()
+    return
 
 # another plot cell — fig and ax reused freely, no conflict
 @app.cell
@@ -242,7 +262,8 @@ def _(df):
         ax.set_ylabel("Price (£)")
         plt.tight_layout()
         return fig
-    return _()
+    _()
+    return
 ```
 
 ---
@@ -302,7 +323,7 @@ RULE: Use `mo.stop(condition, mo.md("reason"))` to halt a cell and its dependent
 # notebook-conventions
 
 RULE: One notebook, one question.
-RULE: All reusable logic belongs in `src/data_science_project` — notebooks call functions, they do not reimplement them.
+RULE: All reusable logic belongs in `src/{{ package_name }}` — notebooks call functions, they do not reimplement them.
 RULE: Keep data loading cells at the top.
 RULE: Use descriptive cell function names when the cell has a clear purpose — e.g. `def load_raw_data_(pl):`.
 RULE: Use `@app.cell(hide_code=True)` for cells where the output is the point.

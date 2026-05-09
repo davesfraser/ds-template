@@ -20,10 +20,19 @@ Analytical standards are handled by skills in `.github/skills/`:
 
 # Priority rules
 
-Downstream templates should put their most important domain rules here.
-
 <!-- project-template:extension:priority-rules:start -->
-<!-- Add high-priority project-type-specific rules here. -->
+# Project scope
+
+PROJECT_SCOPE: {{ project_scope }}
+# Valid values: analysis | production
+#   analysis   — The deliverable is findings, a report, or a recommendation.
+#                Any technique (regression, clustering, ML) is valid.
+#                Engineering serves the analysis. Notebooks are a legitimate
+#                final artefact. Code is not expected to be maintained.
+#   production — The deliverable is running code: a tool, scheduled pipeline,
+#                deployed model, or internal application. Code will be maintained,
+#                extended, or consumed by other systems. Full engineering rigour.
+# Edit this value if the project's operational destiny changes.
 <!-- project-template:extension:priority-rules:end -->
 
 ---
@@ -37,7 +46,7 @@ RULE: run ruff, mypy and pytest
 RULE: do not hardcode secrets
 RULE: prefer typed, small, testable functions
 RULE: keep IO separate from pure logic where practical
-RULE: notebooks are for exploration only; reusable logic lives in `src/`
+RULE: for production-scope projects, notebooks are for exploration only; reusable logic lives in `src/`. For analysis-scope projects, notebooks are the primary deliverable.
 RULE: all filesystem paths must be imported from `{{ package_name }}.paths`
 RULE: all configuration values must be imported from `{{ package_name }}.settings`
 
@@ -147,14 +156,43 @@ skill before generating code.
 RULE: For every stage that produces a notebook, the marimo skill applies.
 RULE: For every stage that produces figures, the ds-visualisation skill applies
 and all mandatory figures must be saved to `FIGURES_DIR`.
-RULE: Every analytical task must produce reusable functions in `src/` organised
-by responsibility.
-RULE: Every analytical task must produce pytest tests covering reusable `src/`
-functions.
 RULE: Scripts orchestrate pipelines by calling `src/` functions; they do not
 implement analytical logic directly.
 RULE: All dataframe operations should use Polars. Pandas may be used only when
 required by an external library, and conversions should happen at the call site.
 RULE: Reports are named `YYYY-MM-DD_<activity>.md`.
 RULE: Figures are named `<subject>_<chart_type>.png`.
+
+## Rules for PROJECT_SCOPE=analysis
+
+RULE [analysis]: Notebooks are the primary deliverable; a well-structured,
+readable notebook is an acceptable final output.
+RULE [analysis]: Keep logic inline in notebooks for single-use steps. Extract
+to `src/` only when logic is reused across notebooks, has non-trivial
+branching, or needs isolation for testing.
+RULE [analysis]: Write tests for `src/` functions with complex logic or reused
+across notebooks. Single-use analytical code does not require unit tests.
+
+## Rules for PROJECT_SCOPE=production
+
+RULE [production]: Every task must produce reusable, typed functions in `src/`
+organised by responsibility.
+RULE [production]: Every `src/` function must have pytest coverage.
+RULE [production]: Notebooks are for exploration only; all reusable logic must
+be extracted to `src/` before delivery.
 <!-- project-template:extension:downstream-rules:end -->
+
+---
+
+# Anti-patterns (enforced for all scopes)
+
+RULE: Do not write functions whose sole purpose is templating or generating
+report prose as strings.
+RULE: Do not write tests that assert on report text content, file existence,
+or notebook source code.
+RULE: Do not return arithmetic-identity DataFrames from `src/` functions
+for the sole purpose of making them unit-testable.
+RULE: Do not persist DataFrames to `data/processed/` if they are only used
+for display in a notebook or report and have no downstream consumer.
+RULE: Do not create orchestrator functions that return 10+ named outputs —
+return only what a downstream step or the report actually uses.

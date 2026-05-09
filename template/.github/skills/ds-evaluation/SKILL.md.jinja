@@ -16,6 +16,7 @@ user-invocable: true
 
 # ai-assistant-quick-summary
 
+- This skill applies to production-scope predictive models (stages 7–8 of the production workflow). For analysis-scope model fitting, apply only the metrics and baseline rules that are relevant to the question.
 - Never evaluate on the training set
 - Reserve the final test set until all development is complete
 - No single metric tells the complete story — use multiple
@@ -33,7 +34,7 @@ RULE: Use cross-validation for model selection and hyperparameter tuning, not th
 RULE: No single metric tells the complete story — select a combination appropriate to the problem and interpret them together.
 RULE: Never report accuracy alone for classification — it is misleading for imbalanced classes. Report precision, recall, F1, and AUC together at minimum.
 RULE: For classifiers outputting probability scores use log loss — it rewards calibrated probabilities which accuracy and F1 do not.
-RULE: Calibrate probability outputs — a model that says 80% probability should be right 80% of the time. Use calibration curves and Brier scores to diagnose this.
+RULE [classifiers]: Calibrate probability outputs — a model that says 80% probability should be right 80% of the time. Use calibration curves and Brier scores to diagnose this.
 RULE: Establish a simple baseline before evaluating any complex model — mean predictor for regression, majority class for classification, logistic regression for tabular data.
 RULE: Use SHAP values to explain predictions — prefer `shap.Explainer` over model-specific explainers. Built-in feature importances are misleading for correlated features.
 RULE: For regression report MAE alongside RMSE — MAE is interpretable in domain units, RMSE penalises large errors more heavily. Report both and explain the tradeoff.
@@ -50,7 +51,7 @@ RULE: Follow this checklist before reporting any evaluation results:
 1. Confirm the test set was untouched during development.
 2. Report baseline metrics alongside model metrics.
 3. Report multiple metrics appropriate to the problem.
-4. Calibrate probability outputs and report calibration curve.
+4. [Classifiers only] Calibrate probability outputs and report calibration curve.
 5. Run SHAP analysis and document key drivers.
 6. Evaluate on meaningful subgroups.
 7. Report confidence intervals on all metrics.
