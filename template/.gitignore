@@ -37,5 +37,19 @@ Thumbs.db
 .env.*
 !.env.example
 
-# Local template render target — throwaway, never commit
-.rendered/
+# Data files — binary/large data should not be in version control
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Model artefacts and generated figures
+models/*
+!models/.gitkeep
+reports/figures/*
+!reports/figures/.gitkeep
+!reports/figures/README.md

@@ -12,13 +12,40 @@ user-invocable: true
 
 # DS Workflow Orchestrator — {{ project_name }}
 
-This skill sequences the canonical data science workflow. When given an
-analytical goal, follow these stages in order. Do not skip stages. Do not
-begin modelling before EDA is complete and documented.
+This skill was rendered for PROJECT_SCOPE={{ project_scope }}.
+If you change PROJECT_SCOPE in AGENTS.md, regenerate with `copier update`
+or manually update this skill to match.
 
 ---
 
-# canonical-workflow
+# workflow
+
+{% if project_scope == 'analysis' %}
+The deliverable is findings or a recommendation. Any analytical technique
+is valid — regression, clustering, ML, or descriptive. Engineering serves
+the analysis.
+
+```
+Stage 1 — Problem Definition
+Stage 2 — Data Acquisition and Validation    → ds-eda, marimo
+Stage 3 — Exploratory Data Analysis         → ds-eda, ds-visualisation, marimo
+Stage 4 — Analysis and Insight Generation   → ds-eda, ds-stats (optional), marimo
+Stage 5 — Communication                     → ds-visualisation
+```
+
+RULE: No train/test split is required unless a generalisation claim is being made.
+RULE: Statistical tests are optional — invoke ds-stats only if the question
+requires significance testing or effect size estimation.
+RULE: Findings are observations and insights, not hypothesis test outcomes. Do not
+produce a formal hypothesis register unless the user explicitly requests one.
+RULE: Stage 4 output is a markdown summary of findings in `reports/`, not a
+list of confirmed or rejected hypotheses.
+RULE: Models fit for analysis do not need to be serialised to `models/`
+unless the user explicitly asks for them to be saved.
+{% else %}
+The deliverable is running code that will be deployed or maintained.
+Full 9-stage flow for supervised learning, forecasting, and causal modelling.
+
 ```
 Stage 1 — Problem Definition
 Stage 2 — Data Acquisition and Validation    → ds-eda, marimo
@@ -26,10 +53,11 @@ Stage 3 — Exploratory Data Analysis         → ds-eda, ds-visualisation, mari
 Stage 4 — Hypothesis Generation             → output: documented in reports/
 Stage 5 — Confirmatory Design               → ds-stats, ds-visualisation, marimo
 Stage 6 — Data Preparation                  → ds-modelling, ds-eda, marimo
-Stage 7 — Modelling                         → ds-modelling, marimo
+Stage 7 — Modelling                         → ds-modelling, ds-evaluation, ds-visualisation, marimo
 Stage 8 — Evaluation                        → ds-evaluation, ds-visualisation, marimo
-Stage 9 — Communication                     → ds-visualisation
+Stage 9 — Communication                     → ds-visualisation, marimo
 ```
+{% endif %}
 
 For each stage, apply the corresponding skill. Do not proceed to the next
 stage until the current stage outputs are documented.
@@ -78,6 +106,43 @@ RULE: EDA outputs belong in a dedicated notebook —
 
 ---
 
+{% if project_scope == 'analysis' %}
+# stage-4-analysis-and-insight-generation
+
+Apply skills: `ds-eda`, `ds-stats` (optional), `marimo`
+
+RULE: Treat all findings as observations derived from available data.
+RULE: State what the data shows. Do not frame observations as confirmed
+or rejected hypotheses unless held-out data was used for confirmation.
+RULE: If held-out data is not available, state this explicitly in the report.
+RULE: Document findings as a markdown summary in `reports/`.
+
+---
+
+# stage-5-communication
+
+Apply skill: `ds-visualisation`
+
+RULE: Produce explanatory visualisations for the report — these are
+different from the exploratory ones produced in stage 3.
+RULE: Every figure saved to `reports/figures/` must be registered in
+`reports/figures/README.md`.
+RULE: Every report in `reports/` must follow the template in `reports/README.md`.
+RULE: Document what was tried and rejected alongside what worked.
+
+---
+
+# resuming-mid-workflow
+
+If the user asks to continue an existing analysis rather than start a
+new one, first check:
+
+1. What stage has been completed — look for evidence in `reports/` and
+   `notebooks/marimo/`.
+2. Whether EDA findings are documented before proceeding to stage 4.
+
+State which stage you are resuming from before generating any code.
+{% else %}
 # stage-4-hypothesis-generation
 
 RULE: Based on EDA findings, state hypotheses explicitly in plain language.
@@ -162,3 +227,4 @@ new one, first check:
 3. Whether train/test split has been performed before any preprocessing.
 
 State which stage you are resuming from before generating any code.
+{% endif %}

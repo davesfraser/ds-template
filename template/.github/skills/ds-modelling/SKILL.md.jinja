@@ -18,6 +18,7 @@ user-invocable: true
 
 # ai-assistant-quick-summary
 
+- This skill applies to production-scope projects (stages 6–7 of the production workflow). Do not apply Pipeline/serialisation requirements to analysis-scope model fitting.
 - Train/test split before any preprocessing
 - Use scikit-learn Pipeline to encapsulate all preprocessing
 - Establish a baseline before any complex model
@@ -31,6 +32,7 @@ user-invocable: true
 
 RULE: Split train/test before any preprocessing — fit all transformers on train only, transform both.
 RULE: Use scikit-learn `Pipeline` to encapsulate preprocessing — this structurally prevents most common leakage patterns.
+RULE: AGENTS.md mandates Polars for dataframe operations. Convert to numpy at sklearn call sites using `df.to_numpy()` for feature arrays and `series.to_numpy()` for target vectors. Do not convert to pandas intermediates.
 RULE: For time-series data always use temporal splits — random splits allow future data to predict the past.
 RULE: Watch for group leakage — if related records such as the same patient, user, or location can appear in both train and test, split by group not by row.
 RULE: Prefer `class_weight='balanced'` for imbalanced classes — avoid SMOTE unless its distributional assumptions are explicitly understood and justified.
@@ -43,19 +45,18 @@ RULE: Hyperparameter tuning must use the validation set or inner CV loop — nev
 
 RULE: Establish a simple baseline before any complex model — mean predictor for regression, majority class for classification, logistic regression for tabular data. Complexity is not justified if it does not beat the baseline convincingly.
 RULE: Set `random_state` in all stochastic models and scikit-learn components.
-RULE: Parameterize all model hyperparameters via `settings.py` — never hardcode them.
+RULE [production]: Parameterize all model hyperparameters via `settings.py` — never hardcode them.
 RULE: Use cross-validation for model selection and hyperparameter tuning.
 RULE: Document what was tried and what did not work — negative results are information.
-RULE: Feature engineering transformations must be reproducible functions in `src/` — not ad-hoc notebook code.
+RULE [production]: Feature engineering transformations must be reproducible functions in `src/` — not ad-hoc notebook code.
 
 ---
 
 # reproducibility
 
 RULE: Fix the train/test split index and store it — if you re-split you cannot compare results.
-RULE: Set `random_state` in all stochastic components.
 RULE: Every pipeline must be runnable end-to-end from raw data with a single command.
-RULE: Persist trained models to `models/` with a clear naming convention that includes the model type and version.
+RULE [production]: Persist trained models to `models/` with a clear naming convention that includes the model type and version.
 
 ---
 

@@ -44,8 +44,8 @@ from {{ package_name }}.settings import settings
 RULE: Create a `ui/` directory at the repo root for all app presentation collateral.
 RULE: Place reusable UI rendering functions in `ui/` — e.g. `ui/components.py`, `ui/charts.py`. These are display helpers that depend on `streamlit` and are not suitable for `src/`.
 RULE: Place custom CSS files in `ui/` — e.g. `ui/style.css`. Load with `st.markdown` or `st.html`.
-RULE: Place custom JavaScript files in `ui/` — e.g. `ui/analytics.js`.
 RULE: Place logos, icons, and other static assets in `ui/assets/` — e.g. `ui/assets/logo.png`.
+NOTE: Custom JavaScript requires Streamlit's component API (`streamlit.components.v1`) — it cannot be loaded by placing `.js` files in a directory.
 RULE: `ui/` is for presentation only — business logic still belongs in `src/{{ package_name }}`.
 RULE: Functions in `ui/` may import `streamlit` — unlike `src/`, they are tied to the app runtime.
 
@@ -87,8 +87,8 @@ RULE: Never use `@st.cache_resource` for a function that returns a mutable data 
 ```python
 # correct — client is a shared resource, not data
 @st.cache_resource
-def get_anthropic_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic(api_key=settings.anthropic_api_key.get_secret_value())
+def get_api_client() -> SomeClient:
+    return SomeClient(api_key=settings.api_key.get_secret_value())
 ```
 
 ---
@@ -112,17 +112,17 @@ RULE: Functions in `src/` must not import `streamlit` — keeping `st` out of `s
 **ANTI-PATTERN — logic in the app file:**
 ```python
 # app.py — wrong
-response = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]).messages.create(...)
+result = some_client(api_key=os.environ["API_KEY"]).call(payload)
 ```
 
 **Correct — logic in src/, wiring in app.py:**
 ```python
 # src/{{ package_name }}/client.py
-def query(prompt: str) -> str:
-    client = get_anthropic_client()
+def fetch_results(query: str) -> list[dict]:
+    client = _get_client()
     ...
 
 # app.py
-from {{ package_name }}.client import query
-response = query(prompt)
+from {{ package_name }}.client import fetch_results
+results = fetch_results(query)
 ```
